@@ -32,10 +32,23 @@ gulp.task('build', function() {
   burn = gulp.src(source)
     .pipe(concat({ path: 'burn.js' }))
     .pipe(coffee().on('error', util.log))
-    .pipe(gulp.dest('./'))
+    .pipe(gulp.dest('./'));
 });
 
-gulp.task('default', function() {
+gulp.task('build-min', function () {
+  burnMin = gulp.src(source)
+    .pipe(concat({ path: 'burn.min.js' }))
+    .pipe(coffee().on('error', util.log))
+    .pipe(uglify({ mangle: false, preserveComments: 'license' }))
+    .pipe(gulp.dest('./'));
+});
+
+gulp.task('dist', function () {
+  gulp.start('build');
+  gulp.start('build-min');
+});
+
+gulp.task('start-dev', function() {
   watch('src/**/*.coffee', batch(function (events, done) {
         gulp.start('build', done);
     }));

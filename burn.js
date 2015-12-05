@@ -92,46 +92,49 @@
   self.Burn = Burn;
 
   Burn.adapters.BackboneRelational = function() {
-    var factory, getter, setter;
-    factory = function(action) {
+    var _factory, _getter, _setter;
+    _factory = function(action) {
       return function(model, keypath, callback) {
         var eventName, value;
-        if (!(model instanceof Burn.Model)) {
-          return;
-        }
-        value = model.get(keypath);
-        eventName = keypath === '*' ? 'change' : "change:" + keypath;
-        model[action](eventName, callback);
-        if (value instanceof Burn.Collection) {
-          return value[action]('add remove reset sort', callback);
+        if (model instanceof Burn.Model) {
+          value = model.get(keypath);
+          eventName = keypath === '*' ? 'change' : "change:" + keypath;
+          model[action](eventName, callback);
+          if (value instanceof Burn.Collection) {
+            return value[action]('add remove reset sort', callback);
+          }
+        } else if (model instanceof Burn.Collection && keypath === 'models') {
+          return model[action]('add remove reset sort', callback);
         }
       };
     };
-    getter = function(obj, keypath) {
+    _getter = function(obj, keypath) {
       var value;
-      if (!(obj instanceof Burn.Model || obj instanceof Burn.Collection)) {
-        return;
+      if (obj instanceof Burn.Model) {
+        value = keypath === '*' ? obj.attributes : obj.get(keypath);
+        if (value instanceof Burn.Collection) {
+          value = value.models;
+        }
+      } else if (obj instanceof Burn.Collection) {
+        value = obj.models;
       }
-      value = keypath === '*' ? obj.attributes : obj.get(keypath);
-      if (value instanceof Burn.Collection) {
-        return value.models;
-      }
+      return value;
     };
-    return setter = function(obj, keypath, value) {
+    _setter = function(obj, keypath, value) {
       if (!(obj instanceof Burn.Model || obj instanceof Burn.Collection)) {
         return;
       }
       if (keypath === '*') {
-        obj.set(value);
+        return obj.set(value);
       } else {
-        obj.set(keypath, value);
+        return obj.set(keypath, value);
       }
-      return {
-        observe: factory('on'),
-        unobserve: factory('off'),
-        get: getter,
-        set: setter
-      };
+    };
+    return {
+      observe: _factory('on'),
+      unobserve: _factory('off'),
+      get: _getter,
+      set: _setter
     };
   };
 
@@ -300,9 +303,7 @@
     View.prototype.afterDestroy = function() {};
 
     View.prototype.loadTemplate = function() {
-      var q;
-      q = $.Deferred();
-      return q;
+      return $.get(this.template);
     };
 
     View.prototype.render = function() {
@@ -310,14 +311,12 @@
       this.beforeRender();
       this.loadTemplate().then((function(_this) {
         return function(tpl) {
-          if (_this.template) {
-            _this.$el.html();
-          }
+          _this.$el.html(tpl);
           _this.__rivets__ = rivets.bind(_this.el, _this);
           return _this.afterRender();
         };
       })(this));
-      return this;
+      return this.el;
     };
 
     View.prototype.destroy = function() {

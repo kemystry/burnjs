@@ -1,24 +1,25 @@
 Burn.adapters.BackboneRelational =  ->
 
-  factory = (action) ->
+  _factory = (action) ->
     (model, keypath, callback) ->
-      unless model instanceof Burn.Model
-        return
-      value = model.get(keypath)
-      eventName = if keypath == '*' then 'change' else "change:#{keypath}"
-      model[action](eventName, callback)
+      if model instanceof Burn.Model
+        value = model.get(keypath)
+        eventName = if keypath == '*' then 'change' else "change:#{keypath}"
+        model[action](eventName, callback)
+        if value instanceof Burn.Collection
+          value[action]('add remove reset sort', callback)
+      else if model instanceof Burn.Collection && keypath == 'models'
+        model[action]('add remove reset sort', callback)
 
-      if value instanceof Burn.Collection
-        value[action]('add remove reset sort', callback)
+  _getter = (obj, keypath) ->
+    if obj instanceof Burn.Model
+      value = if keypath == '*' then obj.attributes else obj.get(keypath)
+      value = value.models if value instanceof Burn.Collection
+    else if obj instanceof Burn.Collection
+      value = obj.models
+    value
 
-  getter = (obj, keypath) ->
-    unless obj instanceof Burn.Model || obj instanceof Burn.Collection
-      return
-
-    value = if keypath == '*' then obj.attributes else obj.get(keypath)
-    value.models if value instanceof Burn.Collection
-
-  setter = (obj, keypath, value) ->
+  _setter = (obj, keypath, value) ->
     unless obj instanceof Burn.Model || obj instanceof Burn.Collection
       return
 
@@ -27,9 +28,9 @@ Burn.adapters.BackboneRelational =  ->
     else
       obj.set(keypath, value)
 
-    {
-      observe: factory('on'),
-      unobserve: factory('off'),
-      get: getter,
-      set: setter
-    }
+  {
+    observe: _factory('on'),
+    unobserve: _factory('off'),
+    get: _getter,
+    set: _setter
+  }

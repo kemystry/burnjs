@@ -14,6 +14,7 @@ class TodoController extends Burn.Controller
 
   allBefore: ->
     @collection = new TodoApp.TodoItemCollection()
+    @collection.fetch()
     console.log('before all', arguments)
 
   allAfter: ->
@@ -29,10 +30,10 @@ class TodoController extends Burn.Controller
     console.log('test')
 
   detail: (params) ->
-    @collection.fetch()
-    # @view = new TodoApp.TodoItemIndexView(@collection)
+    @view = new TodoApp.TodoItemIndexView(@collection)
+    $('body').html(@view.render())
     # @listenTo(@view, 'todo:remove', @removeTodo)
-    Burn.layout('default')
+    # Burn.layout('default')
     # .containers.content.update(view)
 
   removeTodo: ->
