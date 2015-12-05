@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "burnjs",
   "version": "1.0.0",
   "description": "MVC Framework using Backbone, Backbone Relational and Rivets.",
