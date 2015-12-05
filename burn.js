@@ -291,6 +291,46 @@
       return View.__super__.constructor.apply(this, arguments);
     }
 
+    View.prototype.beforeRender = function() {};
+
+    View.prototype.afterRender = function() {};
+
+    View.prototype.beforeDestroy = function() {};
+
+    View.prototype.afterDestroy = function() {};
+
+    View.prototype.loadTemplate = function() {
+      var q;
+      q = $.Deferred();
+      return q;
+    };
+
+    View.prototype.render = function() {
+      this.$el.addClass(this.constructor.name);
+      this.beforeRender();
+      this.loadTemplate().then((function(_this) {
+        return function(tpl) {
+          if (_this.template) {
+            _this.$el.html();
+          }
+          _this.__rivets__ = rivets.bind(_this.el, _this);
+          return _this.afterRender();
+        };
+      })(this));
+      return this;
+    };
+
+    View.prototype.destroy = function() {
+      if (this._beforeDestroy) {
+        this._beforeDestroy();
+      }
+      this.parent = null;
+      this.__rivets__.unbind();
+      delete this.__rivets__;
+      this.remove();
+      return this.afterDestroy();
+    };
+
     return View;
 
   })(Backbone.View);
