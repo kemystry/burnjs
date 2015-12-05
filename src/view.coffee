@@ -1,0 +1,1 @@
+class Burn.View extends Backbone.View

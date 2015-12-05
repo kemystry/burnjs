@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" data-framework="backbonejs">
+  <head>
+    <meta charset="utf-8">
+    <title>Burn.js &bull; TodoMVC</title>
+    <link rel="stylesheet" href="node_modules/todomvc-common/base.css">
+    <link rel="stylesheet" href="node_modules/todomvc-app-css/index.css">
+    <script>
+      var TodoApp = {};
+    </script>
+  </head>
+  <body>
+    <div brn-app></div>
+
+    <script src="node_modules/todomvc-common/base.js"></script>
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="node_modules/lodash/index.js"></script>
+    <script src="node_modules/backbone/backbone.js"></script>
+    <script src="node_modules/backbone-relational/backbone-relational.js"></script>
+    <script src="node_modules/rivets/dist/rivets.bundled.min.js"></script>
+    <script src="node_modules/burnjs/burn.js"></script>
+    <script type="text/coffeescript" src="todo_item.coffee"></script>
+    <script type="text/coffeescript" src="todo_item_collection.coffee"></script>
+    <script type="text/coffeescript" src="todo_controller.coffee"></script>
+    <script type="text/javascript" src="coffee-script.js"></script>
+    <script>
+      setTimeout(function() {
+        Burn.resourceHost = 'http://jsonplaceholder.typicode.com';
+        Burn.start();
+      }, 100);
+    </script>
+  </body>
+</html>

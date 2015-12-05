@@ -1,0 +1,1 @@
+class TodoApp.TodoItem extends Burn.Model
