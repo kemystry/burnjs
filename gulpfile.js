@@ -4,6 +4,7 @@ concat  = require('gulp-concat'),
 uglify  = require('gulp-uglify'),
 watch   = require('gulp-watch'),
 batch   = require('gulp-batch'),
+codo    = require('gulp-codo'),
 util    = require('gulp-util');
 
 source = [
@@ -17,6 +18,15 @@ source = [
   'src/view.coffee',
   'src/bootstrap.coffee'
 ];
+
+gulp.task('doc', function () {
+  gulp.src('./src/**/*.coffee', {read: false})
+  .pipe(codo({
+    name: 'Burnjs',
+    title: 'Burnjs Documentation',
+    readme: 'README.md'
+  }));
+});
 
 gulp.task('build', function() {
   burn = gulp.src(source)
