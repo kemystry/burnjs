@@ -26,20 +26,24 @@ class Burn.Controller
 
   # @nodoc
   runBeforeFilters: (params, path, name) ->
-    @runFilters(name, @beforeFilters)
+    filters = @buildFilterChain(name, @beforeFilters)
+    new Burn.FilterChain(filters).start()
 
   # @nodoc
   runAfterFilters: (params, path, name) ->
-    @runFilters(name, @afterFilters)
+    filters = @buildFilterChain(name, @afterFilters)
+    new Burn.FilterChain(filters).start()
 
   # @nodoc
-  runFilters: (name, filters) ->
-    run = false
+  buildFilterChain: (name, filters) ->
+    chain = []
     for action, opts of filters
+      run = false
       if opts == 'all'
         run = true
       else if opts.only && opts.only.indexOf(name) != -1
         run = true
       else if opts.except && opts.except.indexOf(name) == -1
         run = true
-      @[action].apply(@, [name]) if run
+      chain.push(@[action]) if run
+    chain

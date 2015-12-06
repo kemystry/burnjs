@@ -12,20 +12,17 @@ class Burn.View extends Backbone.View
   # Called after view is destroyed. Override in your view.
   afterDestroy: ->
 
-  loadTemplate: ->
-    $.get(@template)
-
   render: ->
     @$el.addClass(@constructor.name)
     @beforeRender()
-    @loadTemplate().then (tpl) =>
+    new Burn.Template(@template).load().then (tpl) =>
       @$el.html(tpl)
       @__rivets__ = rivets.bind @el, @
       @afterRender()
     @el
 
   destroy: ->
-    @_beforeDestroy() if @_beforeDestroy
+    @_beforeDestroy()
     @parent = null
     @__rivets__.unbind()
     delete @__rivets__

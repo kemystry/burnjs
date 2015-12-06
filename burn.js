@@ -1,7 +1,8 @@
 (function() {
   var Burn,
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    hasProp = {}.hasOwnProperty;
+    hasProp = {}.hasOwnProperty,
+    bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Burn = (function() {
     function Burn() {}
@@ -162,9 +163,10 @@
             params[match[1]] = arg;
           }
         }
-        ctrl.runBeforeFilters.apply(ctrl, [params, path, name]);
-        ctrl[name].apply(ctrl, [params]);
-        return ctrl.runAfterFilters.apply(ctrl, [params, path, name]);
+        return ctrl.runBeforeFilters.apply(ctrl, [params, path, name]).then(function() {
+          ctrl[name].apply(ctrl, [params]);
+          return ctrl.runAfterFilters.apply(ctrl, [params, path, name]);
+        });
       };
       return this.route(path, name, callback);
     };
@@ -172,6 +174,42 @@
     return Router;
 
   })(Backbone.Router);
+
+  Burn.FilterChain = (function() {
+    FilterChain.prototype.filters = [];
+
+    function FilterChain(filters) {
+      this.runFilter = bind(this.runFilter, this);
+      this.fail = bind(this.fail, this);
+      this.next = bind(this.next, this);
+      this.filters = filters;
+    }
+
+    FilterChain.prototype.next = function() {
+      return this.runFilter(this.filters.shift());
+    };
+
+    FilterChain.prototype.fail = function(message) {
+      return this.q.fail(message);
+    };
+
+    FilterChain.prototype.start = function() {
+      this.q = $.Deferred();
+      this.next();
+      return this.q.promise();
+    };
+
+    FilterChain.prototype.runFilter = function(filter) {
+      if (_.isUndefined(filter)) {
+        return this.q.resolve();
+      } else {
+        return filter.apply(this, [this.next, this.fail]);
+      }
+    };
+
+    return FilterChain;
+
+  })();
 
 
   /*
@@ -197,19 +235,23 @@
     Controller.prototype.afterFilters = {};
 
     Controller.prototype.runBeforeFilters = function(params, path, name) {
-      return this.runFilters(name, this.beforeFilters);
+      var filters;
+      filters = this.buildFilterChain(name, this.beforeFilters);
+      return new Burn.FilterChain(filters).start();
     };
 
     Controller.prototype.runAfterFilters = function(params, path, name) {
-      return this.runFilters(name, this.afterFilters);
+      var filters;
+      filters = this.buildFilterChain(name, this.afterFilters);
+      return new Burn.FilterChain(filters).start();
     };
 
-    Controller.prototype.runFilters = function(name, filters) {
-      var action, opts, results, run;
-      run = false;
-      results = [];
+    Controller.prototype.buildFilterChain = function(name, filters) {
+      var action, chain, opts, run;
+      chain = [];
       for (action in filters) {
         opts = filters[action];
+        run = false;
         if (opts === 'all') {
           run = true;
         } else if (opts.only && opts.only.indexOf(name) !== -1) {
@@ -218,12 +260,10 @@
           run = true;
         }
         if (run) {
-          results.push(this[action].apply(this, [name]));
-        } else {
-          results.push(void 0);
+          chain.push(this[action]);
         }
       }
-      return results;
+      return chain;
     };
 
     return Controller;
@@ -238,12 +278,18 @@
     }
 
     Model.prototype.url = function() {
-      var path;
+      var _url, id, path;
+      console.log('url', arguments);
       if (!this.resourcePath) {
         throw new Error(this.constructor.name + " must specify a resourcePath");
       }
       path = _.isFunction(this.resourcePath) ? this.resourcePath() : this.resourcePath;
-      return Burn.resourceHost + "/" + path;
+      id = this.get('id');
+      _url = Burn.resourceHost + "/" + path;
+      if (id) {
+        _url = _url + "/" + id;
+      }
+      return _url;
     };
 
     return Model;
@@ -270,17 +316,65 @@
 
   })(Backbone.Collection);
 
-  Burn.Layout = (function() {
-    function Layout() {}
+  Burn.Template = (function() {
+    Template.baseUrl = '';
 
+    Template.prototype.templateUrl = '';
+
+    Template.prototype.templateString = '';
+
+    function Template(templateUrl) {
+      this.templateUrl = templateUrl;
+    }
+
+    Template.prototype.load = function() {
+      var q;
+      q = $.Deferred();
+      $.get(this.templateUrl).then((function(_this) {
+        return function(tpl) {
+          _this.templateString = tpl;
+          return q.resolve(_this.templateString);
+        };
+      })(this));
+      return q.promise();
+    };
+
+    return Template;
+
+  })();
+
+  Burn.Layout = (function() {
     Layout.prototype.template = null;
 
     Layout.prototype.containers = {};
 
+    function Layout(templateUrl) {
+      this.template = templateUrl;
+    }
+
     Layout.prototype.render = function() {
-      var mainContainer;
-      mainContainer = $('[brn-app]').first();
-      return mainContainer.text(this.template);
+      var q;
+      this.appContainer = $('[brn-app]').first();
+      q = $.Deferred();
+      new Burn.Template(this.template).load().then((function(_this) {
+        return function(tpl) {
+          _this.appContainer.html(tpl);
+          _this.initContainers();
+          return q.resolve(_this);
+        };
+      })(this));
+      return q.promise();
+    };
+
+    Layout.prototype.initContainers = function() {
+      return this.appContainer.find('[brn-container]').each((function(_this) {
+        return function(idx, ele) {
+          var $ele, name;
+          $ele = $(ele);
+          name = $ele.attr('brn-container');
+          return _this.containers[name] = $ele;
+        };
+      })(this));
     };
 
     return Layout;
@@ -302,14 +396,10 @@
 
     View.prototype.afterDestroy = function() {};
 
-    View.prototype.loadTemplate = function() {
-      return $.get(this.template);
-    };
-
     View.prototype.render = function() {
       this.$el.addClass(this.constructor.name);
       this.beforeRender();
-      this.loadTemplate().then((function(_this) {
+      new Burn.Template(this.template).load().then((function(_this) {
         return function(tpl) {
           _this.$el.html(tpl);
           _this.__rivets__ = rivets.bind(_this.el, _this);
@@ -320,9 +410,7 @@
     };
 
     View.prototype.destroy = function() {
-      if (this._beforeDestroy) {
-        this._beforeDestroy();
-      }
+      this._beforeDestroy();
       this.parent = null;
       this.__rivets__.unbind();
       delete this.__rivets__;

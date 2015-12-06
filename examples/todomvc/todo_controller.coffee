@@ -1,21 +1,21 @@
 class TodoController extends Burn.Controller
 
   routes:
-    ''          : 'test'
-    'todo/:id'  : 'detail'
+    'todos'      : 'index'
+    'todos/:id'  : 'detail'
 
   beforeFilters:
-    'beforeTest' : { only: ['detail'] }
+    # 'beforeTest' : { only: ['detail'] }
     'allBefore' : 'all'
 
-  afterFilters:
-    'afterTest' : { except: ['detail'] }
-    'allAfter' : 'all'
+  # afterFilters:
+    # 'afterTest' : { except: ['detail'] }
+    # 'allAfter' : 'all'
 
-  allBefore: ->
-    @collection = new TodoApp.TodoItemCollection()
-    @collection.fetch()
-    console.log('before all', arguments)
+  allBefore: (next, fail) =>
+    @layout = new Burn.Layout('templates/layout.html')
+    @layout.render().then (layout) ->
+      next()
 
   allAfter: ->
     console.log('after all', arguments)
@@ -26,14 +26,15 @@ class TodoController extends Burn.Controller
   afterTest: ->
     console.log('after', arguments)
 
-  test: ->
-    console.log('test')
+  index: ->
+    @collection = new TodoApp.TodoItemCollection()
+    @collection.fetch()
+    @view = new TodoApp.TodoItemIndexView(@collection)
+    @layout.containers.main.html(@view.render())
 
   detail: (params) ->
-    @view = new TodoApp.TodoItemIndexView(@collection)
-    $('body').html(@view.render())
     # @listenTo(@view, 'todo:remove', @removeTodo)
-    # Burn.layout('default')
+
     # .containers.content.update(view)
 
   removeTodo: ->

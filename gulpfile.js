@@ -11,9 +11,11 @@ source = [
   'src/burn.coffee',
   'src/adapters/**/*.coffee',
   'src/router.coffee',
+  'src/filter_chain.coffee',
   'src/controller.coffee',
   'src/model.coffee',
   'src/collection.coffee',
+  'src/template.coffee',
   'src/layout.coffee',
   'src/view.coffee',
   'src/bootstrap.coffee'
