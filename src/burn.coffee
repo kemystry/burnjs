@@ -55,7 +55,10 @@ class Burn
       rootInterface: '.',
       templateDelimiters: ['{', '}'],
       handler: (target, event, binding) ->
-        @call target, event, binding.view.models
+        if binding.model instanceof Burn.Model
+          @call(binding.model)
+        else
+          @call target, event, binding.view.models
     rivets.configure(config)
 
 self.Burn = Burn

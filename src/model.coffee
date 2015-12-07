@@ -2,7 +2,6 @@ class Burn.Model extends Backbone.RelationalModel
 
   # @nodoc
   url: ->
-    console.log('url', arguments)
     unless @resourcePath
       throw new Error("#{@constructor.name} must specify a resourcePath")
     path = if _.isFunction(@resourcePath) then @resourcePath() else @resourcePath

@@ -16,6 +16,7 @@ source = [
   'src/model.coffee',
   'src/collection.coffee',
   'src/template.coffee',
+  'src/container.coffee',
   'src/layout.coffee',
   'src/view.coffee',
   'src/bootstrap.coffee'

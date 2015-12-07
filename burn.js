@@ -80,7 +80,11 @@
         rootInterface: '.',
         templateDelimiters: ['{', '}'],
         handler: function(target, event, binding) {
-          return this.call(target, event, binding.view.models);
+          if (binding.model instanceof Burn.Model) {
+            return this.call(binding.model);
+          } else {
+            return this.call(target, event, binding.view.models);
+          }
         }
       };
       return rivets.configure(config);
@@ -163,9 +167,11 @@
             params[match[1]] = arg;
           }
         }
-        return ctrl.runBeforeFilters.apply(ctrl, [params, path, name]).then(function() {
+        return ctrl.runBeforeFilters.apply(ctrl, [params, path, name]).done(function() {
           ctrl[name].apply(ctrl, [params]);
           return ctrl.runAfterFilters.apply(ctrl, [params, path, name]);
+        }).fail(function(message) {
+          return alert(message);
         });
       };
       return this.route(path, name, callback);
@@ -190,7 +196,7 @@
     };
 
     FilterChain.prototype.fail = function(message) {
-      return this.q.fail(message);
+      return this.q.reject(message);
     };
 
     FilterChain.prototype.start = function() {
@@ -279,7 +285,6 @@
 
     Model.prototype.url = function() {
       var _url, id, path;
-      console.log('url', arguments);
       if (!this.resourcePath) {
         throw new Error(this.constructor.name + " must specify a resourcePath");
       }
@@ -330,16 +335,50 @@
     Template.prototype.load = function() {
       var q;
       q = $.Deferred();
-      $.get(this.templateUrl).then((function(_this) {
+      $.get(this.templateUrl).done((function(_this) {
         return function(tpl) {
           _this.templateString = tpl;
           return q.resolve(_this.templateString);
         };
-      })(this));
+      })(this)).fail(function() {
+        return q.reject();
+      });
       return q.promise();
     };
 
     return Template;
+
+  })();
+
+  Burn.Container = (function() {
+    Container.prototype.el = null;
+
+    Container.prototype.$el = null;
+
+    Container.prototype.subviews = [];
+
+    function Container(element) {
+      this.el = element;
+      this.$el = $(this.el);
+    }
+
+    Container.prototype.appendView = function(view) {
+      view.render();
+      this.$el.html(view.el);
+      return this.subviews.push(view);
+    };
+
+    Container.prototype.destroy = function() {
+      var i, len, ref, view;
+      ref = this.subviews;
+      for (i = 0, len = ref.length; i < len; i++) {
+        view = ref[i];
+        view.destroy();
+      }
+      return this.$el.remove();
+    };
+
+    return Container;
 
   })();
 
@@ -356,13 +395,15 @@
       var q;
       this.appContainer = $('[brn-app]').first();
       q = $.Deferred();
-      new Burn.Template(this.template).load().then((function(_this) {
+      new Burn.Template(this.template).load().done((function(_this) {
         return function(tpl) {
           _this.appContainer.html(tpl);
           _this.initContainers();
           return q.resolve(_this);
         };
-      })(this));
+      })(this)).fail(function() {
+        return q.reject();
+      });
       return q.promise();
     };
 
@@ -372,9 +413,20 @@
           var $ele, name;
           $ele = $(ele);
           name = $ele.attr('brn-container');
-          return _this.containers[name] = $ele;
+          return _this.containers[name] = new Burn.Container(ele);
         };
       })(this));
+    };
+
+    Layout.prototype.destroy = function() {
+      var container, name, ref;
+      ref = this.containers;
+      for (name in ref) {
+        container = ref[name];
+        container.destroy();
+        delete this.containers[name];
+      }
+      return this.appContainer.remove();
     };
 
     return Layout;

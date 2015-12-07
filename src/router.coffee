@@ -11,7 +11,10 @@ class Burn.Router extends Backbone.Router
           continue if _.isNull(arg)
           match = re.exec(path)
           params[match[1]] = arg
-      ctrl.runBeforeFilters.apply(ctrl, [params, path, name]).then ->
+      ctrl.runBeforeFilters.apply(ctrl, [params, path, name]).done(->
         ctrl[name].apply(ctrl, [params])
         ctrl.runAfterFilters.apply(ctrl, [params, path, name])
+      ).fail((message) ->
+        alert(message)
+      )
     @route(path, name, callback)

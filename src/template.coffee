@@ -10,8 +10,8 @@ class Burn.Template
 
   load: ->
     q = $.Deferred()
-    $.get(@templateUrl).then((tpl) =>
+    $.get(@templateUrl).done((tpl) =>
       @templateString = tpl
       q.resolve(@templateString)
-    )
+    ).fail(-> q.reject())
     q.promise()

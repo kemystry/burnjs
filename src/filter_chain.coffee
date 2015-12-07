@@ -9,7 +9,7 @@ class Burn.FilterChain
     @runFilter(@filters.shift())
 
   fail: (message) =>
-    @q.fail(message)
+    @q.reject(message)
 
   start: ->
     @q = $.Deferred()

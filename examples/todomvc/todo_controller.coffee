@@ -6,31 +6,41 @@ class TodoController extends Burn.Controller
 
   beforeFilters:
     # 'beforeTest' : { only: ['detail'] }
-    'allBefore' : 'all'
+    'setupLayout' : 'all'
+    'setupCollection' : 'all'
 
   # afterFilters:
     # 'afterTest' : { except: ['detail'] }
     # 'allAfter' : 'all'
 
-  allBefore: (next, fail) =>
+  setupLayout: (next, fail) =>
     @layout = new Burn.Layout('templates/layout.html')
-    @layout.render().then (layout) ->
+    @layout.render().done((layout) ->
       next()
+    ).fail(-> fail('layout failed'))
+
+  setupCollection: (next, fail) =>
+    @collection = new TodoApp.TodoItemCollection()
+    @layout.containers.input.$el.on('keydown', (event) =>
+      if event.keyCode == 13
+        @collection.add({ title: @layout.containers.input.$el.val() }).save()
+        @layout.containers.input.$el.val('')
+    )
+    # @collection.fetch()
+    next()
 
   allAfter: ->
     console.log('after all', arguments)
 
-  beforeTest: ->
-    console.log('before', arguments)
+  # beforeTest: ->
+  #   console.log('before', arguments)
 
-  afterTest: ->
-    console.log('after', arguments)
+  # afterTest: ->
+  #   console.log('after', arguments)
 
   index: ->
-    @collection = new TodoApp.TodoItemCollection()
-    @collection.fetch()
     @view = new TodoApp.TodoItemIndexView(@collection)
-    @layout.containers.main.html(@view.render())
+    @layout.containers.main.appendView(@view)
 
   detail: (params) ->
     # @listenTo(@view, 'todo:remove', @removeTodo)
