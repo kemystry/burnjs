@@ -19,21 +19,36 @@ class Burn
       routePath = "#{route}(/)"
       Burn.router.registerRoute(routePath, name, controller)
 
+  # Registers a `Burn.View` with Burn
+  # @param [Burn.View] view
   @registerView: (view) ->
     @views[view.name] = view
 
+  # Registers a `Burn.Model` with Burn
+  # @param [Burn.Model] model
   @registerModel: (model) ->
     @models[model.name] = model
 
+  # Registers a `Burn.Collection` with Burn
+  # @param [Burn.Collection] collection
   @registerCollection: (collection) ->
     @collections[collection.name] = collection
 
+  # Registers a binder with Burn
+  # @param [String] name
+  # @param [Object] binder
   @registerBinder: (name, binder) ->
     rivets.binders[name] = binder
 
+  # Registers a filter with Burn
+  # @param [String] name
+  # @param [Object] filter
   @registerFilter: (name, filter) ->
     rivets.filters[name] = filter
 
+  # Registers a component with Burn
+  # @param [String] name
+  # @param [Object] component
   @registerComponent: (name, component) ->
     rivets.components[name] = component
 

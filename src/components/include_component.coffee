@@ -1,3 +1,4 @@
+# @nodoc
 IncludeComponent =
   static: ['view']
   template: -> ''

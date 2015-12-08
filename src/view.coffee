@@ -1,5 +1,7 @@
 class Burn.View extends Backbone.View
 
+  # @nodoc
+  # @private
   _binding: null
 
   # Called before view has rendered. Override in your view.
@@ -14,6 +16,7 @@ class Burn.View extends Backbone.View
   # Called after view is destroyed. Override in your view.
   afterDestroy: ->
 
+  # @nodoc
   constructor: (opts) ->
     if opts.properties
       for key, val of opts.properties
@@ -31,6 +34,7 @@ class Burn.View extends Backbone.View
       @afterRender()
     @el
 
+  # Destroys view and removes from DOM
   destroy: ->
     @_beforeDestroy()
     @parent = null

@@ -37,33 +37,9 @@
           <td>src&#47;components</td>
         </tr>
       </table>
-      <h2>Variables Summary</h2>
-      <dl class='constants'>
-  <dt id='IncludeComponent-variable'>
-    IncludeComponent
-    =
-  </dt>
-  <dd>
-    <pre><code class='coffeescript'>{
-  &quot;static&quot;: [&#39;view&#39;],
-  template: function() {
-    return &#39;&#39;;
-  },
-  initialize: function(el, data) {
-    delete data.view;
-    this._view = new Burn.views[this[&quot;static&quot;].view]({
-      properties: data
-    });
-    $(el).html(this._view.render());
-    return this._view;
-  }
-}</code></pre>
-    
-  </dd>
-</dl>
     </div>
     <div id='footer'>
-  December 07, 15 17:34:34 by
+  December 07, 15 18:47:21 by
   <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
     Codo
   </a>

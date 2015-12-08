@@ -34,11 +34,14 @@ class Burn.Controller
     filters = @_buildFilterChain(name, @afterFilters)
     new Burn.FilterChain(filters).start()
 
+  # Destroys controller and calls destroy hooks
   destroy: ->
     @beforeDestroy()
     @afterDestroy()
 
+  # Called before controller is destroyed. Override in your controller.
   beforeDestroy: ->
+  # Called after controller is destroyed. Override in your controller.
   afterDestroy: ->
 
   # @nodoc

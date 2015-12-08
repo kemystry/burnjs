@@ -9,6 +9,8 @@ class Burn.Layout
   # @nodoc
   el: null
 
+  # Creates a new layout
+  # @param [String] templateUrl path to layout template
   constructor: (templateUrl) ->
     @template = templateUrl
 

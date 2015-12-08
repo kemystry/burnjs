@@ -1,5 +1,6 @@
 class Burn.Collection extends Backbone.Collection
 
+  # @nodoc
   url: ->
     unless @resourcePath
       throw new Error("#{@constructor.name} must specify a resourcePath")

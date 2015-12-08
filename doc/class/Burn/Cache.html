@@ -73,17 +73,20 @@
       </a>
     </span>
     <span class='desc'>
+      Inserts val into cache identified by key 
     </span>
   </li>
   <li>
     <span class='signature'>
       <a href='#get-dynamic'>
         #
-(void)
+(String|Object)
 <b>get</b><span>(key)</span>
       </a>
     </span>
     <span class='desc'>
+      Retrieve value from cache identified by key @param [String]
+
     </span>
   </li>
   <li>
@@ -95,6 +98,7 @@
       </a>
     </span>
     <span class='desc'>
+      Removes item from cache identified by key 
     </span>
   </li>
   <li>
@@ -106,6 +110,7 @@
       </a>
     </span>
     <span class='desc'>
+      Clear entire cache 
     </span>
   </li>
 </ul>
@@ -118,7 +123,34 @@
 <b>constructor</b><span>(namespace, persist)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Creates new cache store, if persist is true, will use localStorage</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>namespace</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Set namespace for key if using persistence </span>
+    </li>
+    <li>
+      <span class='name'>persist</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Set persistence </span>
+    </li>
+  </ul>
+</div>
   </div>
 </div>
       <h2>Instance Method Details</h2>
@@ -130,16 +162,55 @@
 <b>set</b><span>(key, val)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Inserts val into cache identified by key</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>key</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Key to identify cached val </span>
+    </li>
+    <li>
+      <span class='name'>val</span>
+      <span class='type'>
+        (
+          <tt>String|Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Value to cache, if Persistence is on, Value must be a String </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='get-dynamic'>
       #
-(void)
+(String|Object)
 <b>get</b><span>(key)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Retrieve value from cache identified by key
+@param [String]</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      <tt>String|Object</tt>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='remove-dynamic'>
@@ -148,7 +219,11 @@
 <b>remove</b><span>(key)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Removes item from cache identified by key</p>
+</div>
+<div class='tags'>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='clear-dynamic'>
@@ -157,12 +232,16 @@
 <b>clear</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Clear entire cache</p>
+</div>
+<div class='tags'>
+</div>
   </div>
 </div>
     </div>
     <div id='footer'>
-  December 07, 15 17:34:34 by
+  December 07, 15 18:47:21 by
   <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
     Codo
   </a>

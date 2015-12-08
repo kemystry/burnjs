@@ -35,16 +35,24 @@
           <td>src&#47;template.coffee</td>
         </tr>
       </table>
+      <h2>Overview</h2>
+      <div class='docstring'>
+  
+  <div class='examples'>
+    <h3>Examples:</h3>
+    <h4>
+      Load a template
+    </h4>
+    <pre><code class='coffeescript'>var tpl = new Burn.Template(&#39;path&#47;to&#47;template.html&#39;)
+tpl.load().then(function (templateString) {
+  alert(templateString);
+});</code></pre>
+  </div>
+</div>
+<div class='tags'>
+</div>
       <h2>Variables Summary</h2>
       <dl class='constants'>
-  <dt id='caching-variable'>
-    caching
-    =
-  </dt>
-  <dd>
-    <pre><code class='coffeescript'>true</code></pre>
-    
-  </dd>
   <dt id='baseUrl-variable'>
     baseUrl
     =
@@ -76,11 +84,12 @@
     <span class='signature'>
       <a href='#load-dynamic'>
         #
-(void)
+(jQuery.Promise)
 <b>load</b><span>(cache)</span>
       </a>
     </span>
     <span class='desc'>
+      Loads the template 
     </span>
   </li>
 </ul>
@@ -93,7 +102,24 @@
 <b>constructor</b><span>(templateUrl)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Creates a new template</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>templateUrl</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>path to template </span>
+    </li>
+  </ul>
+</div>
   </div>
 </div>
       <h2>Instance Method Details</h2>
@@ -101,16 +127,40 @@
   <div class='method_details'>
     <p class='signature' id='load-dynamic'>
       #
-(void)
+(jQuery.Promise)
 <b>load</b><span>(cache)</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Loads the template</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>cache</span>
+      <span class='type'>
+        (
+          <tt>Boolean</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>Retrieve from cache or not </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      <tt>jQuery.Promise</tt>
+    </li>
+  </ul>
+</div>
   </div>
 </div>
     </div>
     <div id='footer'>
-  December 07, 15 17:34:34 by
+  December 07, 15 18:47:21 by
   <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
     Codo
   </a>

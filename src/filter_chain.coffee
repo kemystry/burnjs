@@ -2,6 +2,8 @@ class Burn.FilterChain
 
   filters: []
 
+  # Creates FilterChain with provided `filters`
+  # @param [Array] filters Array of callbacks to call in order
   constructor: (filters) ->
     @filters = filters
 

@@ -1,3 +1,4 @@
+# @nodoc
 Burn.adapters.BackboneRelational =  ->
 
   _factory = (action) ->

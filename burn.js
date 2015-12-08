@@ -423,9 +423,16 @@
 
   })(Backbone.Collection);
 
-  Burn.Template = (function() {
-    Template.caching = true;
 
+  /*
+  @example Load a template
+    var tpl = new Burn.Template('path/to/template.html')
+    tpl.load().then(function (templateString) {
+      alert(templateString);
+    });
+   */
+
+  Burn.Template = (function() {
     Template.qCache = new Burn.Cache('templates-q', false);
 
     Template.tplCache = new Burn.Cache('templates', true);
@@ -450,7 +457,7 @@
       } else {
         q = $.Deferred();
         Burn.Template.qCache.set(this.templateUrl, q);
-        if (Burn.Template.tplCache.get(this.templateUrl)) {
+        if (cache && Burn.Template.tplCache.get(this.templateUrl)) {
           q.resolve(Burn.Template.tplCache.get(this.templateUrl));
         } else {
           $.get(this.templateUrl).done((function(_this) {
