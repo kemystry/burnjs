@@ -3,7 +3,11 @@ class Burn.Router extends Backbone.Router
   # @nodoc
   registerRoute: (path, name, controller) ->
     callback = ->
-      ctrl = Burn.currentController = new controller()
+      if Burn.currentController instanceof controller
+        ctrl = Burn.currentController
+      else
+        Burn.currentController.destroy() if Burn.currentController
+        ctrl = Burn.currentController = new controller()
       params = {}
       if arguments.length > 0
         re = /:([a-zA-Z0-9_\-]+)/g

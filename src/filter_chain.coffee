@@ -5,19 +5,27 @@ class Burn.FilterChain
   constructor: (filters) ->
     @filters = filters
 
-  next: =>
-    @runFilter(@filters.shift())
-
-  fail: (message) =>
-    @q.reject(message)
-
+  # Starts chain
+  # @return [jQuery.Promise]
   start: ->
     @q = $.Deferred()
-    @next()
+    @_next()
     @q.promise()
 
-  runFilter: (filter) =>
+  # @nodoc
+  # @private
+  _next: =>
+    @_runFilter(@filters.shift())
+
+  # @nodoc
+  # @private
+  _fail: (message) =>
+    @q.reject(message)
+
+  # @nodoc
+  # @private
+  _runFilter: (filter) =>
     if _.isUndefined(filter)
       @q.resolve()
     else
-      filter.apply(@, [@next, @fail])
+      filter.apply(@, [@_next, @_fail])

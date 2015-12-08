@@ -41,6 +41,17 @@
           </td>
         </tr>
       </table>
+      <h2>Variables Summary</h2>
+      <dl class='constants'>
+  <dt id='_binding-variable'>
+    _binding
+    =
+  </dt>
+  <dd>
+    <pre><code class='coffeescript'>null</code></pre>
+    
+  </dd>
+</dl>
       <h2>Instance Method Summary</h2>
       <ul class='summary'>
   <li>
@@ -93,24 +104,14 @@
   </li>
   <li>
     <span class='signature'>
-      <a href='#loadTemplate-dynamic'>
-        #
-(void)
-<b>loadTemplate</b><span>()</span>
-      </a>
-    </span>
-    <span class='desc'>
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
       <a href='#render-dynamic'>
         #
-(void)
+(DOMElement)
 <b>render</b><span>()</span>
       </a>
     </span>
     <span class='desc'>
+      Renders the template and activates all bindings 
     </span>
   </li>
   <li>
@@ -125,6 +126,18 @@
     </span>
   </li>
 </ul>
+      <h2>Constructor Details</h2>
+      <div class='methods'>
+  <div class='method_details'>
+    <p class='signature' id='constructor-dynamic'>
+      #
+(void)
+<b>constructor</b><span>(opts)</span>
+      <br>
+    </p>
+    
+  </div>
+</div>
       <h2>Instance Method Details</h2>
       <div class='methods'>
   <div class='method_details'>
@@ -180,22 +193,28 @@
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='loadTemplate-dynamic'>
-      #
-(void)
-<b>loadTemplate</b><span>()</span>
-      <br>
-    </p>
-    
-  </div>
-  <div class='method_details'>
     <p class='signature' id='render-dynamic'>
       #
-(void)
+(DOMElement)
 <b>render</b><span>()</span>
       <br>
     </p>
-    
+    <div class='docstring'>
+  <p>Renders the template and activates all bindings</p>
+</div>
+<div class='tags'>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      (
+        <tt>DOMElement</tt>
+      )
+      &mdash;
+      <span class='desc'>The rendered element </span>
+    </li>
+  </ul>
+</div>
   </div>
   <div class='method_details'>
     <p class='signature' id='destroy-dynamic'>
@@ -209,7 +228,7 @@
 </div>
     </div>
     <div id='footer'>
-  December 05, 15 00:57:17 by
+  December 07, 15 17:34:34 by
   <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
     Codo
   </a>

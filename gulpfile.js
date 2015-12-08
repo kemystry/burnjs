@@ -9,6 +9,7 @@ util    = require('gulp-util');
 
 source = [
   'src/burn.coffee',
+  'src/cache.coffee',
   'src/adapters/**/*.coffee',
   'src/router.coffee',
   'src/filter_chain.coffee',
@@ -16,9 +17,12 @@ source = [
   'src/model.coffee',
   'src/collection.coffee',
   'src/template.coffee',
-  'src/container.coffee',
+  'src/attachment.coffee',
   'src/layout.coffee',
   'src/view.coffee',
+  'src/binders/**/*.coffee',
+  'src/filters/**/*.coffee',
+  'src/components/**/*.coffee',
   'src/bootstrap.coffee'
 ];
 
@@ -49,6 +53,7 @@ gulp.task('build-min', function () {
 gulp.task('dist', function () {
   gulp.start('build');
   gulp.start('build-min');
+  gulp.start('doc');
 });
 
 gulp.task('start-dev', function() {

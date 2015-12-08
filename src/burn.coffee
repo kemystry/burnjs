@@ -3,6 +3,7 @@ class Burn
   @adapters: {}
   @controllers: {}
   @models: {}
+  @collections: {}
   @views: {}
   @currentController: null
   @resourceHost: ''
@@ -17,6 +18,24 @@ class Burn
     for route, name of controller::routes
       routePath = "#{route}(/)"
       Burn.router.registerRoute(routePath, name, controller)
+
+  @registerView: (view) ->
+    @views[view.name] = view
+
+  @registerModel: (model) ->
+    @models[model.name] = model
+
+  @registerCollection: (collection) ->
+    @collections[collection.name] = collection
+
+  @registerBinder: (name, binder) ->
+    rivets.binders[name] = binder
+
+  @registerFilter: (name, filter) ->
+    rivets.filters[name] = filter
+
+  @registerComponent: (name, component) ->
+    rivets.components[name] = component
 
   ###
   Sets up and renders a Burn.Layout

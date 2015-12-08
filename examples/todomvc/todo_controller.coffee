@@ -20,13 +20,14 @@ class TodoController extends Burn.Controller
     ).fail(-> fail('layout failed'))
 
   setupCollection: (next, fail) =>
-    @collection = new TodoApp.TodoItemCollection()
-    @layout.containers.input.$el.on('keydown', (event) =>
+    @collection = new Burn.collections.TodoItemCollection()
+    newTodo = @layout.newTodo
+    newTodo.$el.on('keydown', (event) =>
       if event.keyCode == 13
-        @collection.add({ title: @layout.containers.input.$el.val() }).save()
-        @layout.containers.input.$el.val('')
+        @collection.add({ title: newTodo.$el.val() }).save()
+        newTodo.$el.val('')
     )
-    # @collection.fetch()
+    @collection.fetch()
     next()
 
   allAfter: ->
@@ -39,8 +40,8 @@ class TodoController extends Burn.Controller
   #   console.log('after', arguments)
 
   index: ->
-    @view = new TodoApp.TodoItemIndexView(@collection)
-    @layout.containers.main.appendView(@view)
+    @view = new Burn.views.TodoItemIndexView(@collection)
+    @layout.main.appendView(@view)
 
   detail: (params) ->
     # @listenTo(@view, 'todo:remove', @removeTodo)
@@ -49,6 +50,10 @@ class TodoController extends Burn.Controller
 
   removeTodo: ->
     @collectionRemove
+
+  beforeDestroy: ->
+    @layout.newTodo.$el.off('keydown')
+    @layout.destroy()
 
 
 Burn.registerController(TodoController)

@@ -26,17 +26,27 @@ class Burn.Controller
 
   # @nodoc
   runBeforeFilters: (params, path, name) ->
-    filters = @buildFilterChain(name, @beforeFilters)
+    filters = @_buildFilterChain(name, @beforeFilters)
     new Burn.FilterChain(filters).start()
 
   # @nodoc
   runAfterFilters: (params, path, name) ->
-    filters = @buildFilterChain(name, @afterFilters)
+    filters = @_buildFilterChain(name, @afterFilters)
     new Burn.FilterChain(filters).start()
 
+  destroy: ->
+    @beforeDestroy()
+    @afterDestroy()
+
+  beforeDestroy: ->
+  afterDestroy: ->
+
   # @nodoc
-  buildFilterChain: (name, filters) ->
+  # @private
+  _buildFilterChain: (name, filters) ->
     chain = []
+    # Change this to an Array
+    console.log('TODO: Change from object to Array to make sure they run in order')
     for action, opts of filters
       run = false
       if opts == 'all'

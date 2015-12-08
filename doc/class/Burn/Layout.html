@@ -55,28 +55,85 @@
     <span class='signature'>
       <a href='#render-dynamic'>
         #
-(void)
-<b>render</b><span>()</span>
+(jQuery.Promise)
+<b>render</b><span>(selector)</span>
       </a>
     </span>
     <span class='desc'>
-      Renders the layout and places it in the first element found in the document with the <code>brn-app</code> attribute
+      Renders the layout and places it in the first element found in the document defined by selector
 
     </span>
   </li>
+  <li>
+    <span class='signature'>
+      <a href='#destroy-dynamic'>
+        #
+(void)
+<b>destroy</b><span>()</span>
+      </a>
+    </span>
+    <span class='desc'>
+      Removes layout from DOM, and destroys all attached subviews 
+    </span>
+  </li>
 </ul>
+      <h2>Constructor Details</h2>
+      <div class='methods'>
+  <div class='method_details'>
+    <p class='signature' id='constructor-dynamic'>
+      #
+(void)
+<b>constructor</b><span>(templateUrl)</span>
+      <br>
+    </p>
+    
+  </div>
+</div>
       <h2>Instance Method Details</h2>
       <div class='methods'>
   <div class='method_details'>
     <p class='signature' id='render-dynamic'>
       #
-(void)
-<b>render</b><span>()</span>
+(jQuery.Promise)
+<b>render</b><span>(selector)</span>
       <br>
     </p>
     <div class='docstring'>
   <p>Renders the layout and places it in the first element found
-in the document with the <code>brn-app</code> attribute</p>
+in the document defined by selector</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>selector</span>
+      <span class='type'>
+        (
+          <tt>String</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>to place layout </span>
+    </li>
+  </ul>
+  <h3>Returns:</h3>
+  <ul class='return'>
+    <li>
+      <span class='type'></span>
+      <tt>jQuery.Promise</tt>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='destroy-dynamic'>
+      #
+(void)
+<b>destroy</b><span>()</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>Removes layout from DOM, and destroys all attached subviews</p>
 </div>
 <div class='tags'>
 </div>
@@ -84,7 +141,7 @@ in the document with the <code>brn-app</code> attribute</p>
 </div>
     </div>
     <div id='footer'>
-  December 05, 15 00:57:17 by
+  December 07, 15 17:34:34 by
   <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
     Codo
   </a>

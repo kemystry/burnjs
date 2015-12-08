@@ -1,5 +1,7 @@
-class TodoApp.TodoItemCollection extends Burn.Collection
+class TodoItemCollection extends Burn.Collection
 
-  model: TodoApp.TodoItem
+  model: Burn.models.TodoItem
 
   resourcePath: 'todos'
+
+Burn.registerCollection(TodoItemCollection)

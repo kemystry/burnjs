@@ -1,5 +1,5 @@
 (function() {
-  var Burn,
+  var Burn, IncludeComponent,
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty,
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -12,6 +12,8 @@
     Burn.controllers = {};
 
     Burn.models = {};
+
+    Burn.collections = {};
 
     Burn.views = {};
 
@@ -37,6 +39,30 @@
         results.push(Burn.router.registerRoute(routePath, name, controller));
       }
       return results;
+    };
+
+    Burn.registerView = function(view) {
+      return this.views[view.name] = view;
+    };
+
+    Burn.registerModel = function(model) {
+      return this.models[model.name] = model;
+    };
+
+    Burn.registerCollection = function(collection) {
+      return this.collections[collection.name] = collection;
+    };
+
+    Burn.registerBinder = function(name, binder) {
+      return rivets.binders[name] = binder;
+    };
+
+    Burn.registerFilter = function(name, filter) {
+      return rivets.filters[name] = filter;
+    };
+
+    Burn.registerComponent = function(name, component) {
+      return rivets.components[name] = component;
     };
 
 
@@ -96,6 +122,65 @@
 
   self.Burn = Burn;
 
+  Burn.Cache = (function() {
+    Cache.prototype.cache = {};
+
+    Cache.prototype.persist = false;
+
+    Cache.prototype.namespace = '';
+
+    function Cache(namespace, persist) {
+      this.persist = persist || false;
+      this.namespace = namespace || '';
+    }
+
+    Cache.prototype.set = function(key, val) {
+      if (this.persist) {
+        return self.localStorage.setItem(this.namespace + ":" + key, val);
+      } else {
+        return this.cache[key] = val;
+      }
+    };
+
+    Cache.prototype.get = function(key) {
+      if (this.persist) {
+        return self.localStorage.getItem(this.namespace + ":" + key);
+      } else {
+        return this.cache[key];
+      }
+    };
+
+    Cache.prototype.remove = function(key) {
+      if (this.persist) {
+        return self.localStorage.removeItem(this.namespace + ":" + key);
+      } else {
+        return delete this.cache[key];
+      }
+    };
+
+    Cache.prototype.clear = function() {
+      var key, ref, results, val;
+      if (this.persist) {
+        ref = self.localStorage;
+        results = [];
+        for (key in ref) {
+          val = ref[key];
+          if (key.indexOf(this.namespace + ":") === 0) {
+            results.push(self.localStorage.removeItem(key));
+          } else {
+            results.push(void 0);
+          }
+        }
+        return results;
+      } else {
+        return this.cache = [];
+      }
+    };
+
+    return Cache;
+
+  })();
+
   Burn.adapters.BackboneRelational = function() {
     var _factory, _getter, _setter;
     _factory = function(action) {
@@ -154,7 +239,14 @@
       var callback;
       callback = function() {
         var arg, ctrl, i, len, match, params, re;
-        ctrl = Burn.currentController = new controller();
+        if (Burn.currentController instanceof controller) {
+          ctrl = Burn.currentController;
+        } else {
+          if (Burn.currentController) {
+            Burn.currentController.destroy();
+          }
+          ctrl = Burn.currentController = new controller();
+        }
         params = {};
         if (arguments.length > 0) {
           re = /:([a-zA-Z0-9_\-]+)/g;
@@ -185,31 +277,31 @@
     FilterChain.prototype.filters = [];
 
     function FilterChain(filters) {
-      this.runFilter = bind(this.runFilter, this);
-      this.fail = bind(this.fail, this);
-      this.next = bind(this.next, this);
+      this._runFilter = bind(this._runFilter, this);
+      this._fail = bind(this._fail, this);
+      this._next = bind(this._next, this);
       this.filters = filters;
     }
 
-    FilterChain.prototype.next = function() {
-      return this.runFilter(this.filters.shift());
-    };
-
-    FilterChain.prototype.fail = function(message) {
-      return this.q.reject(message);
-    };
-
     FilterChain.prototype.start = function() {
       this.q = $.Deferred();
-      this.next();
+      this._next();
       return this.q.promise();
     };
 
-    FilterChain.prototype.runFilter = function(filter) {
+    FilterChain.prototype._next = function() {
+      return this._runFilter(this.filters.shift());
+    };
+
+    FilterChain.prototype._fail = function(message) {
+      return this.q.reject(message);
+    };
+
+    FilterChain.prototype._runFilter = function(filter) {
       if (_.isUndefined(filter)) {
         return this.q.resolve();
       } else {
-        return filter.apply(this, [this.next, this.fail]);
+        return filter.apply(this, [this._next, this._fail]);
       }
     };
 
@@ -242,19 +334,29 @@
 
     Controller.prototype.runBeforeFilters = function(params, path, name) {
       var filters;
-      filters = this.buildFilterChain(name, this.beforeFilters);
+      filters = this._buildFilterChain(name, this.beforeFilters);
       return new Burn.FilterChain(filters).start();
     };
 
     Controller.prototype.runAfterFilters = function(params, path, name) {
       var filters;
-      filters = this.buildFilterChain(name, this.afterFilters);
+      filters = this._buildFilterChain(name, this.afterFilters);
       return new Burn.FilterChain(filters).start();
     };
 
-    Controller.prototype.buildFilterChain = function(name, filters) {
+    Controller.prototype.destroy = function() {
+      this.beforeDestroy();
+      return this.afterDestroy();
+    };
+
+    Controller.prototype.beforeDestroy = function() {};
+
+    Controller.prototype.afterDestroy = function() {};
+
+    Controller.prototype._buildFilterChain = function(name, filters) {
       var action, chain, opts, run;
       chain = [];
+      console.log('TODO: Change from object to Array to make sure they run in order');
       for (action in filters) {
         opts = filters[action];
         run = false;
@@ -322,6 +424,12 @@
   })(Backbone.Collection);
 
   Burn.Template = (function() {
+    Template.caching = true;
+
+    Template.qCache = new Burn.Cache('templates-q', false);
+
+    Template.tplCache = new Burn.Cache('templates', true);
+
     Template.baseUrl = '';
 
     Template.prototype.templateUrl = '';
@@ -332,43 +440,67 @@
       this.templateUrl = templateUrl;
     }
 
-    Template.prototype.load = function() {
+    Template.prototype.load = function(cache) {
       var q;
-      q = $.Deferred();
-      $.get(this.templateUrl).done((function(_this) {
-        return function(tpl) {
-          _this.templateString = tpl;
-          return q.resolve(_this.templateString);
-        };
-      })(this)).fail(function() {
-        return q.reject();
-      });
-      return q.promise();
+      if (_.isUndefined(cache)) {
+        cache = true;
+      }
+      if (cache && Burn.Template.qCache.get(this.templateUrl)) {
+        return Burn.Template.qCache.get(this.templateUrl);
+      } else {
+        q = $.Deferred();
+        Burn.Template.qCache.set(this.templateUrl, q);
+        if (Burn.Template.tplCache.get(this.templateUrl)) {
+          q.resolve(Burn.Template.tplCache.get(this.templateUrl));
+        } else {
+          $.get(this.templateUrl).done((function(_this) {
+            return function(tpl) {
+              _this.templateString = tpl;
+              Burn.Template.tplCache.set(_this.templateUrl, _this.templateString);
+              return q.resolve(_this.templateString);
+            };
+          })(this)).fail(function() {
+            return q.reject();
+          });
+        }
+        return q.promise();
+      }
     };
 
     return Template;
 
   })();
 
-  Burn.Container = (function() {
-    Container.prototype.el = null;
+  Burn.Attachment = (function() {
+    Attachment.prototype.el = null;
 
-    Container.prototype.$el = null;
+    Attachment.prototype.$el = null;
 
-    Container.prototype.subviews = [];
+    Attachment.prototype.subviews = [];
 
-    function Container(element) {
+    function Attachment(element) {
       this.el = element;
       this.$el = $(this.el);
     }
 
-    Container.prototype.appendView = function(view) {
+    Attachment.prototype.appendView = function(view) {
       view.render();
-      this.$el.html(view.el);
+      this.$el.append(view.el);
       return this.subviews.push(view);
     };
 
-    Container.prototype.destroy = function() {
+    Attachment.prototype.prependView = function(view) {
+      view.render();
+      this.$el.append(view.el);
+      return this.subviews.push(view);
+    };
+
+    Attachment.prototype.removeView = function(view) {
+      this.subviews.splice(this.subviews.indexOf(view), 1);
+      return view.destroy();
+    };
+
+    Attachment.prototype.destroy = function() {
       var i, len, ref, view;
       ref = this.subviews;
       for (i = 0, len = ref.length; i < len; i++) {
@@ -378,27 +510,30 @@
       return this.$el.remove();
     };
 
-    return Container;
+    return Attachment;
 
   })();
 
   Burn.Layout = (function() {
     Layout.prototype.template = null;
 
-    Layout.prototype.containers = {};
+    Layout.prototype.attachments = {};
+
+    Layout.prototype.el = null;
 
     function Layout(templateUrl) {
       this.template = templateUrl;
     }
 
-    Layout.prototype.render = function() {
+    Layout.prototype.render = function(selector) {
       var q;
-      this.appContainer = $('[brn-app]').first();
+      selector = selector || '[brn-app]';
+      this.el = $(selector).first();
       q = $.Deferred();
       new Burn.Template(this.template).load().done((function(_this) {
         return function(tpl) {
-          _this.appContainer.html(tpl);
-          _this.initContainers();
+          _this.el.html(tpl);
+          _this._initAttachments();
           return q.resolve(_this);
         };
       })(this)).fail(function() {
@@ -407,26 +542,28 @@
       return q.promise();
     };
 
-    Layout.prototype.initContainers = function() {
-      return this.appContainer.find('[brn-container]').each((function(_this) {
-        return function(idx, ele) {
-          var $ele, name;
-          $ele = $(ele);
-          name = $ele.attr('brn-container');
-          return _this.containers[name] = new Burn.Container(ele);
-        };
-      })(this));
-    };
-
     Layout.prototype.destroy = function() {
       var container, name, ref;
-      ref = this.containers;
+      ref = this.attachments;
       for (name in ref) {
         container = ref[name];
         container.destroy();
-        delete this.containers[name];
+        delete this.attachments[name];
+        delete this[name];
       }
-      return this.appContainer.remove();
+      return this.el.remove();
+    };
+
+    Layout.prototype._initAttachments = function() {
+      return this.el.find('[brn-attach]').each((function(_this) {
+        return function(idx, ele) {
+          var $ele, name;
+          $ele = $(ele);
+          name = $ele.attr('brn-attach');
+          _this.attachments[name] = new Burn.Attachment(ele);
+          return _this[name] = _this.attachments[name];
+        };
+      })(this));
     };
 
     return Layout;
@@ -436,9 +573,7 @@
   Burn.View = (function(superClass) {
     extend(View, superClass);
 
-    function View() {
-      return View.__super__.constructor.apply(this, arguments);
-    }
+    View.prototype._binding = null;
 
     View.prototype.beforeRender = function() {};
 
@@ -448,13 +583,25 @@
 
     View.prototype.afterDestroy = function() {};
 
+    function View(opts) {
+      var key, ref, val;
+      if (opts.properties) {
+        ref = opts.properties;
+        for (key in ref) {
+          val = ref[key];
+          this[key] = val;
+        }
+      }
+      View.__super__.constructor.apply(this, arguments);
+    }
+
     View.prototype.render = function() {
       this.$el.addClass(this.constructor.name);
       this.beforeRender();
       new Burn.Template(this.template).load().then((function(_this) {
         return function(tpl) {
           _this.$el.html(tpl);
-          _this.__rivets__ = rivets.bind(_this.el, _this);
+          _this._binding = rivets.bind(_this.el, _this);
           return _this.afterRender();
         };
       })(this));
@@ -464,8 +611,8 @@
     View.prototype.destroy = function() {
       this._beforeDestroy();
       this.parent = null;
-      this.__rivets__.unbind();
-      delete this.__rivets__;
+      this._binding.unbind();
+      delete this._binding;
       this.remove();
       return this.afterDestroy();
     };
@@ -473,5 +620,22 @@
     return View;
 
   })(Backbone.View);
+
+  IncludeComponent = {
+    "static": ['view'],
+    template: function() {
+      return '';
+    },
+    initialize: function(el, data) {
+      delete data.view;
+      this._view = new Burn.views[this["static"].view]({
+        properties: data
+      });
+      $(el).html(this._view.render());
+      return this._view;
+    }
+  };
+
+  Burn.registerComponent('include', IncludeComponent);
 
 }).call(this);

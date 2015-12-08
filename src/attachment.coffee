@@ -1,4 +1,4 @@
-class Burn.Container
+class Burn.Attachment
 
   el: null
   $el: null
@@ -12,8 +12,17 @@ class Burn.Container
 
   appendView: (view) ->
     view.render()
-    @$el.html(view.el)
+    @$el.append(view.el)
     @subviews.push(view)
+
+  prependView: (view) ->
+    view.render()
+    @$el.append(view.el)
+    @subviews.push(view)
+
+  removeView: (view) ->
+    @subviews.splice(@subviews.indexOf(view), 1)
+    view.destroy()
 
   destroy: ->
     for view in @subviews

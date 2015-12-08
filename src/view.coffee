@@ -1,5 +1,7 @@
 class Burn.View extends Backbone.View
 
+  _binding: null
+
   # Called before view has rendered. Override in your view.
   beforeRender: ->
 
@@ -12,19 +14,27 @@ class Burn.View extends Backbone.View
   # Called after view is destroyed. Override in your view.
   afterDestroy: ->
 
+  constructor: (opts) ->
+    if opts.properties
+      for key, val of opts.properties
+        @[key] = val
+    super
+
+  # Renders the template and activates all bindings
+  # @return [DOMElement] The rendered element
   render: ->
     @$el.addClass(@constructor.name)
     @beforeRender()
     new Burn.Template(@template).load().then (tpl) =>
       @$el.html(tpl)
-      @__rivets__ = rivets.bind @el, @
+      @_binding = rivets.bind @el, @
       @afterRender()
     @el
 
   destroy: ->
     @_beforeDestroy()
     @parent = null
-    @__rivets__.unbind()
-    delete @__rivets__
+    @_binding.unbind()
+    delete @_binding
     @remove()
     @afterDestroy()

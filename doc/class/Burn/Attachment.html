@@ -21,79 +21,82 @@
     &raquo;
     <span class='title'>Burn</span>
     &raquo;
-    <span class='title'>Controller</span>
+    <span class='title'>Attachment</span>
   </div>
 </div>
     <div id='content'>
       <h1>
         Class:
-        Burn.Controller
+        Burn.Attachment
       </h1>
       <table class='box'>
         <tr>
           <td>Defined in:</td>
-          <td>src&#47;controller.coffee</td>
+          <td>src&#47;attachment.coffee</td>
         </tr>
       </table>
-      <h2>Overview</h2>
-      <div class='docstring'>
-  
-  <div class='examples'>
-    <h3>Examples:</h3>
-    <h4>
-      Extend Burn.Controller and register the new controller
-    </h4>
-    <pre><code class='coffeescript'>class CustomController extends Burn.Controller
-
-  routes:
-    &#39;alert&#47;:title&#39; : &#39;alert&#39;
-
-  alert: (params) -&gt;
-    alert(params.title)
-
-Burn.registerController(CustomController)</code></pre>
-  </div>
-</div>
-<div class='tags'>
-</div>
-      <h2>Property Summary</h2>
-      <dl class='properties'>
-        <dt id='routes-property'>
-          <span class='signature'>
-            (Object)
-            <b>
-              routes
-            </b>
-          </span>
-        </dt>
-        <dd class='desc'>
-          Object map of routes to their callbacks 
-        </dd>
-        <dt id='beforeFilters-property'>
-          <span class='signature'>
-            (Object)
-            <b>
-              beforeFilters
-            </b>
-          </span>
-        </dt>
-        <dd class='desc'>
-          Object map of methods to call before route execution 
-        </dd>
-        <dt id='afterFilters-property'>
-          <span class='signature'>
-            (Object)
-            <b>
-              afterFilters
-            </b>
-          </span>
-        </dt>
-        <dd class='desc'>
-          Object map of methods to call after route execution 
-        </dd>
-      </dl>
+      <h2>Variables Summary</h2>
+      <dl class='constants'>
+  <dt id='el-variable'>
+    el
+    =
+  </dt>
+  <dd>
+    <pre><code class='coffeescript'>null</code></pre>
+    
+  </dd>
+  <dt id='$el-variable'>
+    $el
+    =
+  </dt>
+  <dd>
+    <pre><code class='coffeescript'>null</code></pre>
+    
+  </dd>
+  <dt id='subviews-variable'>
+    subviews
+    =
+  </dt>
+  <dd>
+    <pre><code class='coffeescript'>[]</code></pre>
+    
+  </dd>
+</dl>
       <h2>Instance Method Summary</h2>
       <ul class='summary'>
+  <li>
+    <span class='signature'>
+      <a href='#appendView-dynamic'>
+        #
+(void)
+<b>appendView</b><span>(view)</span>
+      </a>
+    </span>
+    <span class='desc'>
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#prependView-dynamic'>
+        #
+(void)
+<b>prependView</b><span>(view)</span>
+      </a>
+    </span>
+    <span class='desc'>
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#removeView-dynamic'>
+        #
+(void)
+<b>removeView</b><span>(view)</span>
+      </a>
+    </span>
+    <span class='desc'>
+    </span>
+  </li>
   <li>
     <span class='signature'>
       <a href='#destroy-dynamic'>
@@ -105,54 +108,53 @@ Burn.registerController(CustomController)</code></pre>
     <span class='desc'>
     </span>
   </li>
-  <li>
-    <span class='signature'>
-      <a href='#beforeDestroy-dynamic'>
-        #
-(void)
-<b>beforeDestroy</b><span>()</span>
-      </a>
-    </span>
-    <span class='desc'>
-    </span>
-  </li>
-  <li>
-    <span class='signature'>
-      <a href='#afterDestroy-dynamic'>
-        #
-(void)
-<b>afterDestroy</b><span>()</span>
-      </a>
-    </span>
-    <span class='desc'>
-    </span>
-  </li>
 </ul>
+      <h2>Constructor Details</h2>
+      <div class='methods'>
+  <div class='method_details'>
+    <p class='signature' id='constructor-dynamic'>
+      #
+(void)
+<b>constructor</b><span>(element)</span>
+      <br>
+    </p>
+    
+  </div>
+</div>
       <h2>Instance Method Details</h2>
       <div class='methods'>
+  <div class='method_details'>
+    <p class='signature' id='appendView-dynamic'>
+      #
+(void)
+<b>appendView</b><span>(view)</span>
+      <br>
+    </p>
+    
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='prependView-dynamic'>
+      #
+(void)
+<b>prependView</b><span>(view)</span>
+      <br>
+    </p>
+    
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='removeView-dynamic'>
+      #
+(void)
+<b>removeView</b><span>(view)</span>
+      <br>
+    </p>
+    
+  </div>
   <div class='method_details'>
     <p class='signature' id='destroy-dynamic'>
       #
 (void)
 <b>destroy</b><span>()</span>
-      <br>
-    </p>
-    
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='beforeDestroy-dynamic'>
-      #
-(void)
-<b>beforeDestroy</b><span>()</span>
-      <br>
-    </p>
-    
-  </div>
-  <div class='method_details'>
-    <p class='signature' id='afterDestroy-dynamic'>
-      #
-(void)
-<b>afterDestroy</b><span>()</span>
       <br>
     </p>
     

@@ -1,10 +1,5 @@
 <ul class="todo-list">
   <li brn-each-todo="todoItems:models">
-    <div class="view">
-      <input class="toggle" brn-checked="todo:completed" type="checkbox">
-      <label>{ todo:title }</label>
-      <button class="destroy" brn-on-click="todo.destroy"></button>
-    </div>
-    <input class="edit" brn-value="todo:title">
+    <include view="TodoItemView" todo="todo"></include>
   </li>
 </ul>
