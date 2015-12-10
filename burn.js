@@ -383,6 +383,19 @@
 
     Model.prototype.updating = false;
 
+    function Model() {
+      this.on('request', function() {
+        return this.updating = true;
+      });
+      this.on('sync', function() {
+        return this.updating = false;
+      });
+      this.on('error', function() {
+        return this.updating = false;
+      });
+      Model.__super__.constructor.apply(this, arguments);
+    }
+
     Model.prototype.url = function() {
       var _url, id, path;
       if (!this.resourcePath) {
@@ -396,19 +409,6 @@
       }
       return _url;
     };
-
-    function Model() {
-      this.on('request', function() {
-        return this.updating = true;
-      });
-      this.on('sync', function() {
-        return this.updating = false;
-      });
-      this.on('error', function() {
-        return this.updating = false;
-      });
-      Model.__super__.constructor.apply(this, arguments);
-    }
 
     Model.prototype.update = function(opts) {
       var changed, q;
@@ -431,8 +431,19 @@
   Burn.Collection = (function(superClass) {
     extend(Collection, superClass);
 
+    Collection.prototype.updating = false;
+
     function Collection() {
-      return Collection.__super__.constructor.apply(this, arguments);
+      this.on('request', function() {
+        return this.updating = true;
+      });
+      this.on('sync', function() {
+        return this.updating = false;
+      });
+      this.on('error', function() {
+        return this.updating = false;
+      });
+      Collection.__super__.constructor.apply(this, arguments);
     }
 
     Collection.prototype.url = function() {

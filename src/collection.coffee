@@ -1,5 +1,20 @@
 class Burn.Collection extends Backbone.Collection
 
+  updating: false
+
+  # @nodoc
+  constructor: ->
+    @on('request', ->
+      @updating = true
+    )
+    @on('sync', ->
+      @updating = false
+    )
+    @on('error', ->
+      @updating = false
+    )
+    super
+
   # @nodoc
   url: ->
     unless @resourcePath
