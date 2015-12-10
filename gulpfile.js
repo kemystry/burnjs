@@ -56,7 +56,8 @@ gulp.task('dist', function () {
   gulp.start('doc');
 });
 
-gulp.task('start-dev', function() {
+gulp.task('default', function() {
+  gulp.start('build');
   watch('src/**/*.coffee', batch(function (events, done) {
         gulp.start('build', done);
     }));

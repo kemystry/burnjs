@@ -1,11 +1,11 @@
 class TodoController extends Burn.Controller
 
   routes:
-    'todos'      : 'index'
+    ''      : 'index'
     'todos/:id'  : 'detail'
 
   beforeFilters:
-    # 'beforeTest' : { only: ['detail'] }
+  #   # 'beforeTest' : { only: ['detail'] }
     'setupLayout' : 'all'
     'setupCollection' : 'all'
 

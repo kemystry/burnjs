@@ -1,6 +1,7 @@
-<div class="view">
+<div class="todo view" brn-class-updating="todo.updating">
   <input class="toggle" brn-checked="todo:completed" type="checkbox">
   <label>{ todo:title }</label>
+  <input brn-value="todo:title" class="title"/>
   <button class="destroy" brn-on-click="destroyTodo"></button>
 </div>
 <input class="edit" brn-value="todo:title">

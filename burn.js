@@ -381,9 +381,7 @@
   Burn.Model = (function(superClass) {
     extend(Model, superClass);
 
-    function Model() {
-      return Model.__super__.constructor.apply(this, arguments);
-    }
+    Model.prototype.updating = false;
 
     Model.prototype.url = function() {
       var _url, id, path;
@@ -397,6 +395,33 @@
         _url = _url + "/" + id;
       }
       return _url;
+    };
+
+    function Model() {
+      this.on('request', function() {
+        return this.updating = true;
+      });
+      this.on('sync', function() {
+        return this.updating = false;
+      });
+      this.on('error', function() {
+        return this.updating = false;
+      });
+      Model.__super__.constructor.apply(this, arguments);
+    }
+
+    Model.prototype.update = function(opts) {
+      var changed, q;
+      opts = opts || {};
+      opts.patch = true;
+      changed = this.changedAttributes();
+      if (changed) {
+        return this.save(changed, opts);
+      } else {
+        q = $.Deferred();
+        q.resolve(false);
+        return q;
+      }
     };
 
     return Model;
@@ -433,6 +458,8 @@
    */
 
   Burn.Template = (function() {
+    Template.caching = true;
+
     Template.qCache = new Burn.Cache('templates-q', false);
 
     Template.tplCache = new Burn.Cache('templates', true);
@@ -450,7 +477,7 @@
     Template.prototype.load = function(cache) {
       var q;
       if (_.isUndefined(cache)) {
-        cache = true;
+        cache = Burn.Template.caching;
       }
       if (cache && Burn.Template.qCache.get(this.templateUrl)) {
         return Burn.Template.qCache.get(this.templateUrl);
@@ -592,7 +619,7 @@
 
     function View(opts) {
       var key, ref, val;
-      if (opts.properties) {
+      if (_.isObject(opts) && opts.properties) {
         ref = opts.properties;
         for (key in ref) {
           val = ref[key];

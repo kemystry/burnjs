@@ -6,6 +6,7 @@
   });
 ###
 class Burn.Template
+  @caching: true
 
   @qCache: new Burn.Cache('templates-q', false)
   @tplCache: new Burn.Cache('templates', true)
@@ -24,7 +25,7 @@ class Burn.Template
   # @param [Boolean] cache Retrieve from cache or not
   # @return [jQuery.Promise]
   load: (cache) ->
-    cache = true if _.isUndefined(cache)
+    cache = Burn.Template.caching if _.isUndefined(cache)
     if cache && Burn.Template.qCache.get(@templateUrl)
       return Burn.Template.qCache.get(@templateUrl)
     else

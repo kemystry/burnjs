@@ -1,5 +1,7 @@
 class Burn.Model extends Backbone.RelationalModel
 
+  updating: false
+
   # @nodoc
   url: ->
     unless @resourcePath
@@ -9,3 +11,29 @@ class Burn.Model extends Backbone.RelationalModel
     _url = "#{Burn.resourceHost}/#{path}"
     _url = "#{_url}/#{id}" if id
     _url
+
+  # @nodoc
+  constructor: ->
+    @on('request', ->
+      @updating = true
+    )
+    @on('sync', ->
+      @updating = false
+    )
+    @on('error', ->
+      @updating = false
+    )
+    super
+
+  # Helper method to apply a patch
+  # @param [Object] opts Options to pass
+  update: (opts) ->
+    opts = opts || {}
+    opts.patch = true
+    changed = @changedAttributes()
+    if changed
+      @save(changed, opts)
+    else
+      q = $.Deferred()
+      q.resolve(false)
+      q

@@ -18,7 +18,7 @@ class Burn.View extends Backbone.View
 
   # @nodoc
   constructor: (opts) ->
-    if opts.properties
+    if _.isObject(opts) && opts.properties
       for key, val of opts.properties
         @[key] = val
     super
