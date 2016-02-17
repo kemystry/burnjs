@@ -13,7 +13,10 @@ class Burn.Cache
 
   # Inserts val into cache identified by key
   # @param [String] key Key to identify cached val
-  # @param [String|Object] val Value to cache, if Persistence is on, Value must be a String
+  ###
+  @param [String|Object] val Value to cache, if Persistence is on,
+   Value must be a String
+  ###
   set: (key, val) ->
     if @persist
       self.localStorage.setItem("#{@namespace}:#{key}", val)

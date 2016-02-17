@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "burnjs",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "MVC Framework using Backbone, Backbone Relational and Rivets.",
   "main": "burn.js",
   "repository": "https://github.com/kemystry/burnjs",
@@ -24,6 +24,7 @@
     "backbone-relational": "^0.10.0",
     "jquery": "^2.1.4",
     "lodash": "^3.10.1",
+    "minimist": "^1.2.0",
     "rivets": "^0.8.1"
   },
   "devDependencies": {

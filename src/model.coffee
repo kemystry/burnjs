@@ -1,5 +1,11 @@
 class Burn.Model extends Backbone.RelationalModel
 
+  # @attributes =
+  #   name: 'string'
+  #   cost: 'number'
+  #   visible: 'boolean'
+  #   createdAt: 'datetime'
+
   updating: false
 
   # @nodoc
@@ -19,21 +25,25 @@ class Burn.Model extends Backbone.RelationalModel
   url: ->
     unless @resourcePath
       throw new Error("#{@constructor.name} must specify a resourcePath")
-    path = if _.isFunction(@resourcePath) then @resourcePath() else @resourcePath
+    if _.isFunction(@resourcePath)
+      path = @resourcePath()
+    else
+      path = @resourcePath
     id = @get('id')
     _url = "#{Burn.resourceHost}/#{path}"
     _url = "#{_url}/#{id}" if id
-    _url
+    _url + '/'
 
-  # Helper method to apply a patch
+  # Helper method to apply a patch if values have changed
   # @param [Object] opts Options to pass
   update: (opts) ->
     opts = opts || {}
-    opts.patch = true
-    changed = @changedAttributes()
-    if changed
-      @save(changed, opts)
-    else
-      q = $.Deferred()
-      q.resolve(false)
-      q
+    if @changedAttributes()
+      opts.patch = true
+    @save(@changed, opts)
+
+  toJSON: (opts) ->
+    attributes = super(opts)
+    if @excludeFromJSON
+      attributes = _.omit(attributes, @excludeFromJSON)
+    attributes

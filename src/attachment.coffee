@@ -7,8 +7,17 @@ class Burn.Attachment
 
   # @param [DOMElement] element
   constructor: (element) ->
+    @subviews = []
     @el = element
     @$el = $(@el)
+
+  # Renders and replaces content with `view`
+  # @param [Burn.View] view
+  setView: (view) ->
+    @removeViews()
+    view.render()
+    @$el.html(view.el)
+    @subviews.push(view)
 
   # Renders and appends `view` to the attachement's DOMElement
   # @param [Burn.View] view
@@ -32,6 +41,10 @@ class Burn.Attachment
 
   # Destroys all subviews and removes attachment from the DOM
   destroy: ->
-    for view in @subviews
-      view.destroy()
+    @removeViews()
     @$el.remove()
+
+  # Destroys all subviews
+  removeViews: ->
+    for view in @subviews
+      @removeView(view)

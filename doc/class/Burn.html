@@ -91,6 +91,14 @@
     <pre><code class='coffeescript'>&#39;&#39;</code></pre>
     
   </dd>
+  <dt id='resourceAttrTransform-variable'>
+    resourceAttrTransform
+    =
+  </dt>
+  <dd>
+    <pre><code class='coffeescript'>null</code></pre>
+    
+  </dd>
 </dl>
       <h2>Class Method Summary</h2>
       <ul class='summary'>
@@ -156,10 +164,10 @@
   </li>
   <li>
     <span class='signature'>
-      <a href='#registerFilter-static'>
+      <a href='#registerFormatter-static'>
         .
 (void)
-<b>registerFilter</b><span>(name, filter)</span>
+<b>registerFormatter</b><span>(name, formatter)</span>
       </a>
     </span>
     <span class='desc'>
@@ -187,7 +195,8 @@
       </a>
     </span>
     <span class='desc'>
-      Sets up and renders a Burn.Layout 
+      Sets up and renders a Burn.Layout  Burn.Layout
+
     </span>
   </li>
   <li>
@@ -195,7 +204,7 @@
       <a href='#start-static'>
         .
 (void)
-<b>start</b><span>()</span>
+<b>start</b><span>(opts)</span>
       </a>
     </span>
     <span class='desc'>
@@ -336,10 +345,10 @@
 </div>
   </div>
   <div class='method_details'>
-    <p class='signature' id='registerFilter-static'>
+    <p class='signature' id='registerFormatter-static'>
       .
 (void)
-<b>registerFilter</b><span>(name, filter)</span>
+<b>registerFormatter</b><span>(name, formatter)</span>
       <br>
     </p>
     <div class='docstring'>
@@ -407,7 +416,8 @@
       <br>
     </p>
     <div class='docstring'>
-  <p>Sets up and renders a Burn.Layout</p>
+  <p>Sets up and renders a Burn.Layout
+ Burn.Layout</p>
 </div>
 <div class='tags'>
   <h3>Parameters:</h3>
@@ -420,7 +430,7 @@
         )
       </span>
       &mdash;
-      <span class='desc'>template string or an instance of Burn.Layout </span>
+      <span class='desc'>template string or an instance of </span>
     </li>
   </ul>
   <h3>Returns:</h3>
@@ -436,7 +446,7 @@
     <p class='signature' id='start-static'>
       .
 (void)
-<b>start</b><span>()</span>
+<b>start</b><span>(opts)</span>
       <br>
     </p>
     <div class='docstring'>
@@ -448,7 +458,7 @@
 </div>
     </div>
     <div id='footer'>
-  December 10, 15 13:22:15 by
+  February 17, 16 13:25:09 by
   <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
     Codo
   </a>

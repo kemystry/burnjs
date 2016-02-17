@@ -7,6 +7,7 @@ class Burn
   @views: {}
   @currentController: null
   @resourceHost: ''
+  @resourceAttrTransform: null
 
   ###
   Registers a Burn.Controller and sets up the controller's routes
@@ -43,8 +44,8 @@ class Burn
   # Registers a filter with Burn
   # @param [String] name
   # @param [Object] filter
-  @registerFilter: (name, filter) ->
-    rivets.filters[name] = filter
+  @registerFormatter: (name, formatter) ->
+    rivets.formatters[name] = formatter
 
   # Registers a component with Burn
   # @param [String] name
@@ -55,7 +56,8 @@ class Burn
   ###
   Sets up and renders a Burn.Layout
   @return [Burn.Layout]
-  @param [String|Burn.Layout] either template string or an instance of Burn.Layout
+  @param [String|Burn.Layout] either template string or an instance of
+   Burn.Layout
   ###
   @layout: (layout) ->
     if _.isString(layout)
@@ -69,11 +71,18 @@ class Burn
   ###
   Start application and start listening to route changes
   ###
-  @start: ->
+  @start: (opts) ->
+    @_initOpts(opts)
     @_initConfig()
     @_initAdapters()
     Backbone.history.start()
 
+  # @private
+  # @nodoc
+  @_initOpts: (opts) ->
+    @opts = opts || {}
+    @resourceHost = @opts.resourceHost || ''
+    @resourceAttrTransform = @opts.resourceAttrTransform || null
 
   # @private
   # @nodoc

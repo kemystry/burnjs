@@ -1,5 +1,5 @@
 (function() {
-  var Burn, IncludeComponent,
+  var AddClassBinder, BgImageBinder, Burn, IncludeComponent, RhrefBinder,
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty,
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -20,6 +20,8 @@
     Burn.currentController = null;
 
     Burn.resourceHost = '';
+
+    Burn.resourceAttrTransform = null;
 
 
     /*
@@ -57,8 +59,8 @@
       return rivets.binders[name] = binder;
     };
 
-    Burn.registerFilter = function(name, filter) {
-      return rivets.filters[name] = filter;
+    Burn.registerFormatter = function(name, formatter) {
+      return rivets.formatters[name] = formatter;
     };
 
     Burn.registerComponent = function(name, component) {
@@ -69,7 +71,8 @@
     /*
     Sets up and renders a Burn.Layout
     @return [Burn.Layout]
-    @param [String|Burn.Layout] either template string or an instance of Burn.Layout
+    @param [String|Burn.Layout] either template string or an instance of
+     Burn.Layout
      */
 
     Burn.layout = function(layout) {
@@ -88,10 +91,17 @@
     Start application and start listening to route changes
      */
 
-    Burn.start = function() {
+    Burn.start = function(opts) {
+      this._initOpts(opts);
       this._initConfig();
       this._initAdapters();
       return Backbone.history.start();
+    };
+
+    Burn._initOpts = function(opts) {
+      this.opts = opts || {};
+      this.resourceHost = this.opts.resourceHost || '';
+      return this.resourceAttrTransform = this.opts.resourceAttrTransform || null;
     };
 
     Burn._initAdapters = function() {
@@ -133,6 +143,12 @@
       this.persist = persist || false;
       this.namespace = namespace || '';
     }
+
+
+    /*
+    @param [String|Object] val Value to cache, if Persistence is on,
+     Value must be a String
+     */
 
     Cache.prototype.set = function(key, val) {
       if (this.persist) {
@@ -247,6 +263,7 @@
           }
           ctrl = Burn.currentController = new controller();
         }
+        console.log('TODO: Add layout attr to controllers,\nonly re-layout when needed');
         params = {};
         if (arguments.length > 0) {
           re = /:([a-zA-Z0-9_\-]+)/g;
@@ -356,7 +373,7 @@
     Controller.prototype._buildFilterChain = function(name, filters) {
       var action, chain, opts, run;
       chain = [];
-      console.log('TODO: Change from object to Array to make sure they run in order');
+      console.log("TODO: Change from object to Array to make sure they run in order");
       for (action in filters) {
         opts = filters[action];
         run = false;
@@ -401,27 +418,34 @@
       if (!this.resourcePath) {
         throw new Error(this.constructor.name + " must specify a resourcePath");
       }
-      path = _.isFunction(this.resourcePath) ? this.resourcePath() : this.resourcePath;
+      if (_.isFunction(this.resourcePath)) {
+        path = this.resourcePath();
+      } else {
+        path = this.resourcePath;
+      }
       id = this.get('id');
       _url = Burn.resourceHost + "/" + path;
       if (id) {
         _url = _url + "/" + id;
       }
-      return _url;
+      return _url + '/';
     };
 
     Model.prototype.update = function(opts) {
-      var changed, q;
       opts = opts || {};
-      opts.patch = true;
-      changed = this.changedAttributes();
-      if (changed) {
-        return this.save(changed, opts);
-      } else {
-        q = $.Deferred();
-        q.resolve(false);
-        return q;
+      if (this.changedAttributes()) {
+        opts.patch = true;
       }
+      return this.save(this.changed, opts);
+    };
+
+    Model.prototype.toJSON = function(opts) {
+      var attributes;
+      attributes = Model.__super__.toJSON.call(this, opts);
+      if (this.excludeFromJSON) {
+        attributes = _.omit(attributes, this.excludeFromJSON);
+      }
+      return attributes;
     };
 
     return Model;
@@ -451,8 +475,12 @@
       if (!this.resourcePath) {
         throw new Error(this.constructor.name + " must specify a resourcePath");
       }
-      path = _.isFunction(this.resourcePath) ? this.resourcePath() : this.resourcePath;
-      return Burn.resourceHost + "/" + path;
+      if (_.isFunction(this.resourcePath)) {
+        path = this.resourcePath();
+      } else {
+        path = this.resourcePath;
+      }
+      return Burn.resourceHost + "/" + path + "/";
     };
 
     return Collection;
@@ -524,9 +552,17 @@
     Attachment.prototype.subviews = [];
 
     function Attachment(element) {
+      this.subviews = [];
       this.el = element;
       this.$el = $(this.el);
     }
+
+    Attachment.prototype.setView = function(view) {
+      this.removeViews();
+      view.render();
+      this.$el.html(view.el);
+      return this.subviews.push(view);
+    };
 
     Attachment.prototype.appendView = function(view) {
       view.render();
@@ -546,13 +582,19 @@
     };
 
     Attachment.prototype.destroy = function() {
-      var i, len, ref, view;
+      this.removeViews();
+      return this.$el.remove();
+    };
+
+    Attachment.prototype.removeViews = function() {
+      var i, len, ref, results, view;
       ref = this.subviews;
+      results = [];
       for (i = 0, len = ref.length; i < len; i++) {
         view = ref[i];
-        view.destroy();
+        results.push(this.removeView(view));
       }
-      return this.$el.remove();
+      return results;
     };
 
     return Attachment;
@@ -566,19 +608,30 @@
 
     Layout.prototype.el = null;
 
-    function Layout(templateUrl) {
-      this.template = templateUrl;
+    Layout.prototype.$el = null;
+
+    Layout.prototype.initialize = function(opts) {};
+
+    function Layout(opts) {
+      var el;
+      opts = opts || {};
+      if (opts.template) {
+        this.template = new Burn.Template(opts.template);
+      }
+      el = opts.el || '<div></div>';
+      this.$el = $(el);
+      this.el = this.$el[0];
+      this.initialize(opts);
     }
 
-    Layout.prototype.render = function(selector) {
+    Layout.prototype.render = function() {
       var q;
-      selector = selector || '[brn-app]';
-      this.el = $(selector).first();
       q = $.Deferred();
-      new Burn.Template(this.template).load().done((function(_this) {
+      this.template.load().done((function(_this) {
         return function(tpl) {
-          _this.el.html(tpl);
+          _this.$el.html(tpl);
           _this._initAttachments();
+          _this._binding = rivets.bind(_this.el, {});
           return q.resolve(_this);
         };
       })(this)).fail(function() {
@@ -589,6 +642,8 @@
 
     Layout.prototype.destroy = function() {
       var container, name, ref;
+      this._binding.unbind();
+      delete this._binding;
       ref = this.attachments;
       for (name in ref) {
         container = ref[name];
@@ -600,7 +655,7 @@
     };
 
     Layout.prototype._initAttachments = function() {
-      return this.el.find('[brn-attach]').each((function(_this) {
+      return this.$el.find('[brn-attach]').each((function(_this) {
         return function(idx, ele) {
           var $ele, name;
           $ele = $(ele);
@@ -630,6 +685,7 @@
 
     function View(opts) {
       var key, ref, val;
+      this.options = opts;
       if (_.isObject(opts) && opts.properties) {
         ref = opts.properties;
         for (key in ref) {
@@ -638,23 +694,26 @@
         }
       }
       View.__super__.constructor.apply(this, arguments);
+      this.el.view = this;
     }
 
     View.prototype.render = function() {
-      this.$el.addClass(this.constructor.name);
       this.beforeRender();
-      new Burn.Template(this.template).load().then((function(_this) {
-        return function(tpl) {
-          _this.$el.html(tpl);
-          _this._binding = rivets.bind(_this.el, _this);
-          return _this.afterRender();
-        };
-      })(this));
+      if (this.template) {
+        new Burn.Template(this.template).load().then((function(_this) {
+          return function(tpl) {
+            _this.$el.html(tpl);
+            _this.$el.addClass(_this.constructor.name);
+            _this._binding = rivets.bind(_this.el, _this);
+            return _this.afterRender();
+          };
+        })(this));
+      }
       return this.el;
     };
 
     View.prototype.destroy = function() {
-      this._beforeDestroy();
+      this.beforeDestroy();
       this.parent = null;
       this._binding.unbind();
       delete this._binding;
@@ -666,16 +725,62 @@
 
   })(Backbone.View);
 
+  AddClassBinder = function(el, value) {
+    if (!$(el).hasClass(value)) {
+      return $(el).addClass(value);
+    }
+  };
+
+  Burn.registerBinder('add-class', AddClassBinder);
+
+  BgImageBinder = function(el, value) {
+    return $(el).css('background-image', "url('" + value + "')");
+  };
+
+  Burn.registerBinder('bg-img', BgImageBinder);
+
+  RhrefBinder = {
+    bind: function(ele) {
+      return $(ele).on('click', function(event) {
+        event.preventDefault();
+        return Burn.router.navigate($(this).attr('rhref'), {
+          trigger: true
+        });
+      });
+    },
+    unbind: function(ele) {
+      return $(ele).off('click');
+    },
+    routine: function(ele, value) {
+      if (!value) {
+        value = this.keypath;
+      }
+      $(ele).attr('rhref', value);
+      return $(ele).attr('href', value);
+    }
+  };
+
+  Burn.registerBinder('rhref', RhrefBinder);
+
   IncludeComponent = {
-    "static": ['view'],
+    "static": ['view', 'tag'],
     template: function() {
       return '';
     },
     initialize: function(el, data) {
+      var $el, newEl, opts;
       delete data.view;
-      this._view = new Burn.views[this["static"].view]({
+      opts = {
         properties: data
-      });
+      };
+      if (this["static"].tag) {
+        $el = $(el);
+        newEl = $("<" + this["static"].tag + "/>");
+        $el.replaceWith(newEl);
+        el = newEl[0];
+        opts.el = el;
+      }
+      this._view = new Burn.views[this["static"].view](opts);
       $(el).html(this._view.render());
       return this._view;
     }

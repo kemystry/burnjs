@@ -14,8 +14,9 @@ class TodoController extends Burn.Controller
     # 'allAfter' : 'all'
 
   setupLayout: (next, fail) =>
-    @layout = new Burn.Layout('templates/layout.html')
+    @layout = new Burn.Layout({ template: 'templates/layout.html' })
     @layout.render().done((layout) ->
+      $('#app').html(layout.el)
       next()
     ).fail(-> fail('layout failed'))
 
@@ -41,7 +42,7 @@ class TodoController extends Burn.Controller
 
   index: ->
     @view = new Burn.views.TodoItemIndexView(@collection)
-    @layout.main.appendView(@view)
+    @layout.main.setView(@view)
 
   detail: (params) ->
     # @listenTo(@view, 'todo:remove', @removeTodo)

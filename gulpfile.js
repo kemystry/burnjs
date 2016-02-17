@@ -21,7 +21,7 @@ source = [
   'src/layout.coffee',
   'src/view.coffee',
   'src/binders/**/*.coffee',
-  'src/filters/**/*.coffee',
+  'src/formatters/**/*.coffee',
   'src/components/**/*.coffee',
   'src/bootstrap.coffee'
 ];

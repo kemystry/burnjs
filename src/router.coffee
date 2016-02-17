@@ -8,6 +8,8 @@ class Burn.Router extends Backbone.Router
       else
         Burn.currentController.destroy() if Burn.currentController
         ctrl = Burn.currentController = new controller()
+      console.log('''TODO: Add layout attr to controllers,
+      only re-layout when needed''')
       params = {}
       if arguments.length > 0
         re = /:([a-zA-Z0-9_\-]+)/g

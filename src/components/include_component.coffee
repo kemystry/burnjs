@@ -1,11 +1,18 @@
 # @nodoc
 IncludeComponent =
-  static: ['view']
+  static: ['view', 'tag']
   template: -> ''
 
   initialize: (el, data) ->
     delete data.view
-    @_view = new Burn.views[@static.view]({ properties: data })
+    opts = { properties: data }
+    if @static.tag
+      $el = $(el)
+      newEl = $("<#{@static.tag}/>")
+      $el.replaceWith(newEl)
+      el = newEl[0]
+      opts.el = el
+    @_view = new Burn.views[@static.view](opts)
     $(el).html(@_view.render())
     @_view
 
