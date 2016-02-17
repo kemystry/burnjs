@@ -41,7 +41,8 @@ class Burn.View extends Backbone.View
   destroy: ->
     @beforeDestroy()
     @parent = null
-    @_binding.unbind()
-    delete @_binding
+    if @_binding
+      @_binding.unbind()
+      delete @_binding
     @remove()
     @afterDestroy()

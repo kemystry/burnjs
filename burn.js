@@ -715,8 +715,10 @@
     View.prototype.destroy = function() {
       this.beforeDestroy();
       this.parent = null;
-      this._binding.unbind();
-      delete this._binding;
+      if (this._binding) {
+        this._binding.unbind();
+        delete this._binding;
+      }
       this.remove();
       return this.afterDestroy();
     };
