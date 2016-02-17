@@ -40,7 +40,7 @@ class Burn.Model extends Backbone.RelationalModel
     opts = opts || {}
     if @changedAttributes()
       opts.patch = true
-    @save(@changed, opts)
+    @save(_.pick(@toJSON(), _.keys(@changed)), opts)
 
   toJSON: (opts) ->
     attributes = super(opts)
