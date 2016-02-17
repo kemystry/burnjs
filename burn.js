@@ -436,7 +436,7 @@
       if (this.changedAttributes()) {
         opts.patch = true;
       }
-      return this.save(this.changed, opts);
+      return this.save(_.pick(this.toJSON(), _.keys(this.changed)), opts);
     };
 
     Model.prototype.toJSON = function(opts) {
