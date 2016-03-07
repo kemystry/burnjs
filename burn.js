@@ -343,6 +343,8 @@
   Burn.Controller = (function() {
     function Controller() {}
 
+    Controller.prototype.layout = null;
+
     Controller.prototype.routes = {};
 
     Controller.prototype.beforeFilters = {};
@@ -624,14 +626,14 @@
       this.initialize(opts);
     }
 
-    Layout.prototype.render = function() {
+    Layout.prototype.render = function(data) {
       var q;
       q = $.Deferred();
       this.template.load().done((function(_this) {
         return function(tpl) {
           _this.$el.html(tpl);
           _this._initAttachments();
-          _this._binding = rivets.bind(_this.el, {});
+          _this._binding = rivets.bind(_this.el, data || {});
           return q.resolve(_this);
         };
       })(this)).fail(function() {

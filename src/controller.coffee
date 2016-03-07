@@ -12,6 +12,10 @@
 ###
 class Burn.Controller
 
+  # @property [String]
+  # Layout
+  layout: null
+
   # @property [Object]
   # Object map of routes to their callbacks
   routes: {}

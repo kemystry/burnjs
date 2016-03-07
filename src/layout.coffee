@@ -29,12 +29,12 @@ class Burn.Layout
   # in the document defined by selector
   # @param [String] selector to place layout
   # @return [jQuery.Promise]
-  render:  ->
+  render:  (data) ->
     q = $.Deferred()
     @template.load().done((tpl) =>
       @$el.html(tpl)
       @_initAttachments()
-      @_binding = rivets.bind @el, {}
+      @_binding = rivets.bind @el, (data || {})
       q.resolve(@)
     ).fail(-> q.reject())
     q.promise()
