@@ -28,6 +28,31 @@ class Burn.Controller
   # Object map of methods to call after route execution
   afterFilters: {}
 
+  _events: []
+
+  # Registers an event with the controller
+  # @param [Object] Object that responds to 'on'
+  # @param [Event] Event name
+  # @param [Function] Callback
+  listenTo: (obj, event, callback) ->
+    @_events.push([obj, event, callback])
+    obj.on(event, callback)
+
+  # Unregisters all or some events with the controller
+  # @param [Object] Object that responds to 'off'
+  stopListening: (obj) ->
+    if _.isUndefined(obj)
+      for evt, idx in @_events
+        evt[0].off(evt[1], evt[2])
+      @_events = []
+    else
+      for evt, idx in @_events
+        if evt[0] == obj
+          evt[0].off(evt[1], evt[2])
+          @_events.splice(idx, 1)
+
+
+
   # @nodoc
   runBeforeFilters: (params, path, name) ->
     filters = @_buildFilterChain(name, @beforeFilters)
@@ -41,6 +66,7 @@ class Burn.Controller
   # Destroys controller and calls destroy hooks
   destroy: ->
     @beforeDestroy()
+    @stopListening()
     @afterDestroy()
 
   # Called before controller is destroyed. Override in your controller.

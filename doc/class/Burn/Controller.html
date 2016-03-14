@@ -103,8 +103,43 @@ Burn.registerController(CustomController)</code></pre>
           Object map of methods to call after route execution 
         </dd>
       </dl>
+      <h2>Variables Summary</h2>
+      <dl class='constants'>
+  <dt id='_events-variable'>
+    _events
+    =
+  </dt>
+  <dd>
+    <pre><code class='coffeescript'>[]</code></pre>
+    
+  </dd>
+</dl>
       <h2>Instance Method Summary</h2>
       <ul class='summary'>
+  <li>
+    <span class='signature'>
+      <a href='#listenTo-dynamic'>
+        #
+(void)
+<b>listenTo</b><span>(obj, event, callback)</span>
+      </a>
+    </span>
+    <span class='desc'>
+      Registers an event with the controller 
+    </span>
+  </li>
+  <li>
+    <span class='signature'>
+      <a href='#stopListening-dynamic'>
+        #
+(void)
+<b>stopListening</b><span>(obj)</span>
+      </a>
+    </span>
+    <span class='desc'>
+      Unregisters all or some events with the controller 
+    </span>
+  </li>
   <li>
     <span class='signature'>
       <a href='#destroy-dynamic'>
@@ -144,6 +179,76 @@ Burn.registerController(CustomController)</code></pre>
 </ul>
       <h2>Instance Method Details</h2>
       <div class='methods'>
+  <div class='method_details'>
+    <p class='signature' id='listenTo-dynamic'>
+      #
+(void)
+<b>listenTo</b><span>(obj, event, callback)</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>Registers an event with the controller</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>Object</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>that responds to &#39;on&#39; </span>
+    </li>
+    <li>
+      <span class='name'>Event</span>
+      <span class='type'>
+        (
+          <tt>Event</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>name </span>
+    </li>
+    <li>
+      <span class='name'>Callback</span>
+      <span class='type'>
+        (
+          <tt>Function</tt>
+        )
+      </span>
+    </li>
+  </ul>
+</div>
+  </div>
+  <div class='method_details'>
+    <p class='signature' id='stopListening-dynamic'>
+      #
+(void)
+<b>stopListening</b><span>(obj)</span>
+      <br>
+    </p>
+    <div class='docstring'>
+  <p>Unregisters all or some events with the controller</p>
+</div>
+<div class='tags'>
+  <h3>Parameters:</h3>
+  <ul class='param'>
+    <li>
+      <span class='name'>Object</span>
+      <span class='type'>
+        (
+          <tt>Object</tt>
+        )
+      </span>
+      &mdash;
+      <span class='desc'>that responds to &#39;off&#39; </span>
+    </li>
+  </ul>
+</div>
+  </div>
   <div class='method_details'>
     <p class='signature' id='destroy-dynamic'>
       #
@@ -186,7 +291,7 @@ Burn.registerController(CustomController)</code></pre>
 </div>
     </div>
     <div id='footer'>
-  March 07, 16 15:49:41 by
+  March 14, 16 10:52:43 by
   <a href='https://github.com/coffeedoc/codo' title='CoffeeScript API documentation generator'>
     Codo
   </a>

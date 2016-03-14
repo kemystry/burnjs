@@ -351,6 +351,38 @@
 
     Controller.prototype.afterFilters = {};
 
+    Controller.prototype._events = [];
+
+    Controller.prototype.listenTo = function(obj, event, callback) {
+      this._events.push([obj, event, callback]);
+      return obj.on(event, callback);
+    };
+
+    Controller.prototype.stopListening = function(obj) {
+      var evt, i, idx, j, len, len1, ref, ref1, results;
+      if (_.isUndefined(obj)) {
+        ref = this._events;
+        for (idx = i = 0, len = ref.length; i < len; idx = ++i) {
+          evt = ref[idx];
+          evt[0].off(evt[1], evt[2]);
+        }
+        return this._events = [];
+      } else {
+        ref1 = this._events;
+        results = [];
+        for (idx = j = 0, len1 = ref1.length; j < len1; idx = ++j) {
+          evt = ref1[idx];
+          if (evt[0] === obj) {
+            evt[0].off(evt[1], evt[2]);
+            results.push(this._events.splice(idx, 1));
+          } else {
+            results.push(void 0);
+          }
+        }
+        return results;
+      }
+    };
+
     Controller.prototype.runBeforeFilters = function(params, path, name) {
       var filters;
       filters = this._buildFilterChain(name, this.beforeFilters);
@@ -365,6 +397,7 @@
 
     Controller.prototype.destroy = function() {
       this.beforeDestroy();
+      this.stopListening();
       return this.afterDestroy();
     };
 
