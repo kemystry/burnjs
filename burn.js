@@ -385,13 +385,13 @@
 
     Controller.prototype.runBeforeFilters = function(params, path, name) {
       var filters;
-      filters = this._buildFilterChain(name, this.beforeFilters);
+      filters = this._buildFilterChain(name, this._getFilters('beforeFilters'));
       return new Burn.FilterChain(filters).start();
     };
 
     Controller.prototype.runAfterFilters = function(params, path, name) {
       var filters;
-      filters = this._buildFilterChain(name, this.afterFilters);
+      filters = this._buildFilterChain(name, this._getFilters('afterFilters'));
       return new Burn.FilterChain(filters).start();
     };
 
@@ -404,6 +404,15 @@
     Controller.prototype.beforeDestroy = function() {};
 
     Controller.prototype.afterDestroy = function() {};
+
+    Controller.prototype._getFilters = function(filterKey) {
+      var filters;
+      filters = {};
+      if (this.constructor.__super__ && this.constructor.__super__[filterKey]) {
+        filters = this.constructor.__super__._getFilters(filterKey);
+      }
+      return _.extend(filters, this[filterKey]);
+    };
 
     Controller.prototype._buildFilterChain = function(name, filters) {
       var action, chain, opts, run;

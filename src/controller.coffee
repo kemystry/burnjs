@@ -55,12 +55,12 @@ class Burn.Controller
 
   # @nodoc
   runBeforeFilters: (params, path, name) ->
-    filters = @_buildFilterChain(name, @beforeFilters)
+    filters = @_buildFilterChain(name, @_getFilters('beforeFilters'))
     new Burn.FilterChain(filters).start()
 
   # @nodoc
   runAfterFilters: (params, path, name) ->
-    filters = @_buildFilterChain(name, @afterFilters)
+    filters = @_buildFilterChain(name, @_getFilters('afterFilters'))
     new Burn.FilterChain(filters).start()
 
   # Destroys controller and calls destroy hooks
@@ -73,6 +73,15 @@ class Burn.Controller
   beforeDestroy: ->
   # Called after controller is destroyed. Override in your controller.
   afterDestroy: ->
+
+  # @nodoc
+  # @private
+  _getFilters: (filterKey) ->
+    filters = {}
+    if @constructor.__super__ && @constructor.__super__[filterKey]
+      filters = @constructor.__super__._getFilters(filterKey)
+    _.extend(filters, @[filterKey])
+
 
   # @nodoc
   # @private
