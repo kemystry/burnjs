@@ -774,7 +774,7 @@
           trigger: true
         };
       }
-      return this.navigate(route, opts);
+      return Burn.router.navigate(route, opts);
     };
 
     return View;

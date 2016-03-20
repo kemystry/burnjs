@@ -49,4 +49,4 @@ class Burn.View extends Backbone.View
 
   navigate: (route, trigger) ->
     opts = { trigger: true } unless trigger == false
-    @navigate(route, opts)
+    Burn.router.navigate(route, opts)
