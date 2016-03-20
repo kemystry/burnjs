@@ -56,12 +56,12 @@ class Burn.Controller
   # @nodoc
   runBeforeFilters: (params, path, name) ->
     filters = @_buildFilterChain(name, @_getFilters('beforeFilters'))
-    new Burn.FilterChain(filters).start()
+    new Burn.FilterChain(filters, path, name).start()
 
   # @nodoc
   runAfterFilters: (params, path, name) ->
     filters = @_buildFilterChain(name, @_getFilters('afterFilters'))
-    new Burn.FilterChain(filters).start()
+    new Burn.FilterChain(filters, path, name).start()
 
   # Destroys controller and calls destroy hooks
   destroy: ->

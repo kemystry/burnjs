@@ -293,10 +293,12 @@
   Burn.FilterChain = (function() {
     FilterChain.prototype.filters = [];
 
-    function FilterChain(filters) {
+    function FilterChain(filters, path, name) {
       this._runFilter = bind(this._runFilter, this);
       this._fail = bind(this._fail, this);
       this._next = bind(this._next, this);
+      this._path = path;
+      this._name = name;
       this.filters = filters;
     }
 
@@ -318,7 +320,7 @@
       if (_.isUndefined(filter)) {
         return this.q.resolve();
       } else {
-        return filter.apply(this, [this._next, this._fail]);
+        return filter.apply(this, [this._next, this._fail, this._path, this._name]);
       }
     };
 
@@ -386,13 +388,13 @@
     Controller.prototype.runBeforeFilters = function(params, path, name) {
       var filters;
       filters = this._buildFilterChain(name, this._getFilters('beforeFilters'));
-      return new Burn.FilterChain(filters).start();
+      return new Burn.FilterChain(filters, path, name).start();
     };
 
     Controller.prototype.runAfterFilters = function(params, path, name) {
       var filters;
       filters = this._buildFilterChain(name, this._getFilters('afterFilters'));
-      return new Burn.FilterChain(filters).start();
+      return new Burn.FilterChain(filters, path, name).start();
     };
 
     Controller.prototype.destroy = function() {

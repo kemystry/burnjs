@@ -4,7 +4,9 @@ class Burn.FilterChain
 
   # Creates FilterChain with provided `filters`
   # @param [Array] filters Array of callbacks to call in order
-  constructor: (filters) ->
+  constructor: (filters, path, name) ->
+    @_path = path
+    @_name = name
     @filters = filters
 
   # Starts chain
@@ -30,4 +32,4 @@ class Burn.FilterChain
     if _.isUndefined(filter)
       @q.resolve()
     else
-      filter.apply(@, [@_next, @_fail])
+      filter.apply(@, [@_next, @_fail, @_path, @_name])
