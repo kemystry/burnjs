@@ -46,3 +46,7 @@ class Burn.View extends Backbone.View
       delete @_binding
     @remove()
     @afterDestroy()
+
+  navigate: (route, trigger) ->
+    opts = { trigger: true } unless trigger == false
+    @navigate(route, opts)

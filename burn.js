@@ -767,6 +767,16 @@
       return this.afterDestroy();
     };
 
+    View.prototype.navigate = function(route, trigger) {
+      var opts;
+      if (trigger !== false) {
+        opts = {
+          trigger: true
+        };
+      }
+      return this.navigate(route, opts);
+    };
+
     return View;
 
   })(Backbone.View);
