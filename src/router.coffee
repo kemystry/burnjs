@@ -21,6 +21,6 @@ class Burn.Router extends Backbone.Router
         ctrl[name].apply(ctrl, [params])
         ctrl.runAfterFilters.apply(ctrl, [params, path, name])
       ).fail((message) ->
-        alert(message)
+        ctrl.onFilterFail(message, params, path, name)
       )
     @route(path, name, callback)

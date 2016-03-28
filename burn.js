@@ -280,7 +280,7 @@
           ctrl[name].apply(ctrl, [params]);
           return ctrl.runAfterFilters.apply(ctrl, [params, path, name]);
         }).fail(function(message) {
-          return alert(message);
+          return ctrl.onFilterFail(message, params, path, name);
         });
       };
       return this.route(path, name, callback);
@@ -406,6 +406,8 @@
     Controller.prototype.beforeDestroy = function() {};
 
     Controller.prototype.afterDestroy = function() {};
+
+    Controller.prototype.onFilterFail = function() {};
 
     Controller.prototype._getFilters = function(filterKey) {
       var filters;

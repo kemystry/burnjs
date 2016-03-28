@@ -74,6 +74,9 @@ class Burn.Controller
   # Called after controller is destroyed. Override in your controller.
   afterDestroy: ->
 
+  # Called when controller before or after filter fails
+  onFilterFail: ->
+
   # @nodoc
   # @private
   _getFilters: (filterKey) ->
