@@ -545,6 +545,8 @@
    */
 
   Burn.Template = (function() {
+    Template.revision = '';
+
     Template.caching = true;
 
     Template.qCache = new Burn.Cache('templates-q', false);
@@ -558,7 +560,7 @@
     Template.prototype.templateString = '';
 
     function Template(templateUrl) {
-      this.templateUrl = templateUrl;
+      this.templateUrl = templateUrl + "?rev=" + Burn.Template.revision;
     }
 
     Template.prototype.load = function(cache) {

@@ -6,6 +6,7 @@
   });
 ###
 class Burn.Template
+  @revision: ''
   @caching: true
 
   @qCache: new Burn.Cache('templates-q', false)
@@ -19,7 +20,7 @@ class Burn.Template
   # Creates a new template
   # @param [String] templateUrl path to template
   constructor: (templateUrl) ->
-    @templateUrl = templateUrl
+    @templateUrl = "#{templateUrl}?rev=#{Burn.Template.revision}"
 
   # Loads the template
   # @param [Boolean] cache Retrieve from cache or not
