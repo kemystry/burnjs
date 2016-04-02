@@ -549,9 +549,7 @@
 
     Template.caching = true;
 
-    Template.qCache = new Burn.Cache('templates-q', false);
-
-    Template.tplCache = new Burn.Cache('templates', true);
+    Template.store = {};
 
     Template.baseUrl = '';
 
@@ -560,6 +558,7 @@
     Template.prototype.templateString = '';
 
     function Template(templateUrl) {
+      this.load = bind(this.load, this);
       this.templateUrl = templateUrl + "?rev=" + Burn.Template.revision;
     }
 
@@ -568,26 +567,19 @@
       if (_.isUndefined(cache)) {
         cache = Burn.Template.caching;
       }
-      if (cache && Burn.Template.qCache.get(this.templateUrl)) {
-        return Burn.Template.qCache.get(this.templateUrl);
-      } else {
+      if (!(cache && Burn.Template.store[this.templateUrl])) {
         q = $.Deferred();
-        Burn.Template.qCache.set(this.templateUrl, q);
-        if (cache && Burn.Template.tplCache.get(this.templateUrl)) {
-          q.resolve(Burn.Template.tplCache.get(this.templateUrl));
-        } else {
-          $.get(this.templateUrl).done((function(_this) {
-            return function(tpl) {
-              _this.templateString = tpl;
-              Burn.Template.tplCache.set(_this.templateUrl, _this.templateString);
-              return q.resolve(_this.templateString);
-            };
-          })(this)).fail(function() {
-            return q.reject();
-          });
-        }
-        return q.promise();
+        $.get(this.templateUrl).done((function(_this) {
+          return function(tpl) {
+            _this.templateString = tpl;
+            return q.resolve(_this.templateString);
+          };
+        })(this)).fail(function() {
+          return q.reject();
+        });
+        Burn.Template.store[this.templateUrl] = q.promise();
       }
+      return Burn.Template.store[this.templateUrl];
     };
 
     return Template;

@@ -9,8 +9,7 @@ class Burn.Template
   @revision: ''
   @caching: true
 
-  @qCache: new Burn.Cache('templates-q', false)
-  @tplCache: new Burn.Cache('templates', true)
+  @store: {}
 
   @baseUrl: ''
 
@@ -25,19 +24,13 @@ class Burn.Template
   # Loads the template
   # @param [Boolean] cache Retrieve from cache or not
   # @return [jQuery.Promise]
-  load: (cache) ->
+  load: (cache) =>
     cache = Burn.Template.caching if _.isUndefined(cache)
-    if cache && Burn.Template.qCache.get(@templateUrl)
-      return Burn.Template.qCache.get(@templateUrl)
-    else
+    unless cache && Burn.Template.store[@templateUrl]
       q = $.Deferred()
-      Burn.Template.qCache.set(@templateUrl, q)
-      if cache && Burn.Template.tplCache.get(@templateUrl)
-        q.resolve(Burn.Template.tplCache.get(@templateUrl))
-      else
-        $.get(@templateUrl).done((tpl) =>
-          @templateString = tpl
-          Burn.Template.tplCache.set(@templateUrl, @templateString)
-          q.resolve(@templateString)
-        ).fail(-> q.reject())
-      q.promise()
+      $.get(@templateUrl).done((tpl) =>
+        @templateString = tpl
+        q.resolve(@templateString)
+      ).fail(-> q.reject())
+      Burn.Template.store[@templateUrl] = q.promise()
+    Burn.Template.store[@templateUrl]
