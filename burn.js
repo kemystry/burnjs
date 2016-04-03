@@ -506,13 +506,22 @@
     Collection.prototype.updating = false;
 
     function Collection() {
-      this.on('request', function() {
+      this.on('request', function(collection) {
+        if (collection !== this) {
+          return;
+        }
         return this.updating = true;
       });
-      this.on('sync', function() {
+      this.on('sync', function(collection) {
+        if (collection !== this) {
+          return;
+        }
         return this.updating = false;
       });
-      this.on('error', function() {
+      this.on('error', function(collection) {
+        if (collection !== this) {
+          return;
+        }
         return this.updating = false;
       });
       Collection.__super__.constructor.apply(this, arguments);

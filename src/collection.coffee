@@ -4,13 +4,16 @@ class Burn.Collection extends Backbone.Collection
 
   # @nodoc
   constructor: ->
-    @on('request', ->
+    @on('request', (collection) ->
+      return unless collection is this
       @updating = true
     )
-    @on('sync', ->
+    @on('sync', (collection) ->
+      return unless collection is this
       @updating = false
     )
-    @on('error', ->
+    @on('error', (collection) ->
+      return unless collection is this
       @updating = false
     )
     super
