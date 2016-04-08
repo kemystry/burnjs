@@ -8,9 +8,9 @@ Burn.adapters.BackboneRelational =  ->
         eventName = if keypath == '*' then 'change' else "change:#{keypath}"
         model[action](eventName, callback)
         if value instanceof Burn.Collection
-          value[action]('add remove reset sort', callback)
+          value[action]('add remove reset sort change', callback)
       else if model instanceof Burn.Collection && keypath == 'models'
-        model[action]('add remove reset sort', callback)
+        model[action]('add remove reset sort change', callback)
 
   _getter = (obj, keypath) ->
     if obj instanceof Burn.Model
