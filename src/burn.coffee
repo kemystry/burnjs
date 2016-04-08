@@ -14,10 +14,13 @@ class Burn
   @param [Burn.Controller] the controller to register
   ###
   @registerController: (controller) ->
-    @router = @router || new Burn.Router()
+    @router or= new Burn.Router()
     @controllers[controller.name] = controller
     for route, name of controller::routes
-      routePath = "#{route}(/)"
+      if controller::scope
+        routePath = "#{controller::scope}/#{route}(/)"
+      else
+        routePath = "#{route}(/)"
       Burn.router.registerRoute(routePath, name, controller)
 
   # Registers a `Burn.View` with Burn

@@ -31,13 +31,17 @@
 
     Burn.registerController = function(controller) {
       var name, ref, results, route, routePath;
-      this.router = this.router || new Burn.Router();
+      this.router || (this.router = new Burn.Router());
       this.controllers[controller.name] = controller;
       ref = controller.prototype.routes;
       results = [];
       for (route in ref) {
         name = ref[route];
-        routePath = route + "(/)";
+        if (controller.prototype.scope) {
+          routePath = controller.prototype.scope + "/" + route + "(/)";
+        } else {
+          routePath = route + "(/)";
+        }
         results.push(Burn.router.registerRoute(routePath, name, controller));
       }
       return results;
