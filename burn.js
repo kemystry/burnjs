@@ -207,10 +207,10 @@
           eventName = keypath === '*' ? 'change' : "change:" + keypath;
           model[action](eventName, callback);
           if (value instanceof Burn.Collection) {
-            return value[action]('add remove reset sort', callback);
+            return value[action]('add remove reset sort change', callback);
           }
         } else if (model instanceof Burn.Collection && keypath === 'models') {
-          return model[action]('add remove reset sort', callback);
+          return model[action]('add remove reset sort change', callback);
         }
       };
     };
