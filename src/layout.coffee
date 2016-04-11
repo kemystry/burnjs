@@ -39,10 +39,14 @@ class Burn.Layout
     ).fail(-> q.reject())
     q.promise()
 
+  isRendered: ->
+    if @_binding then true else false
+
   # Removes layout from DOM, and destroys all attached subviews
   destroy: ->
-    @_binding.unbind()
-    delete @_binding
+    if @_binding
+      @_binding.unbind()
+      delete @_binding
     for name, container of @attachments
       container.destroy()
       delete @attachments[name]

@@ -41,6 +41,9 @@
           routePath = controller.prototype.scope + "/" + route + "(/)";
         } else {
           routePath = route + "(/)";
+          if (route === '*path') {
+            routePath = route;
+          }
         }
         results.push(Burn.router.registerRoute(routePath, name, controller));
       }
@@ -277,7 +280,9 @@
               continue;
             }
             match = re.exec(path);
-            params[match[1]] = arg;
+            if (match && match[1]) {
+              params[match[1]] = arg;
+            }
           }
         }
         return ctrl.runBeforeFilters.apply(ctrl, [params, path, name]).done(function() {
@@ -695,10 +700,20 @@
       return q.promise();
     };
 
+    Layout.prototype.isRendered = function() {
+      if (this._binding) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
     Layout.prototype.destroy = function() {
       var container, name, ref;
-      this._binding.unbind();
-      delete this._binding;
+      if (this._binding) {
+        this._binding.unbind();
+        delete this._binding;
+      }
       ref = this.attachments;
       for (name in ref) {
         container = ref[name];
@@ -738,6 +753,18 @@
 
     View.prototype.afterDestroy = function() {};
 
+    View.prototype.beforeBind = function() {};
+
+    View.prototype.afterBind = function() {};
+
+    View.prototype.beforeTemplateLoad = function() {};
+
+    View.prototype.afterTemplateLoad = function() {};
+
+    View.prototype.transformTemplate = function(tpl) {
+      return tpl;
+    };
+
     function View(opts) {
       var key, ref, val;
       this.options = opts;
@@ -757,9 +784,14 @@
       if (this.template) {
         new Burn.Template(this.template).load().then((function(_this) {
           return function(tpl) {
+            _this.beforeTemplateLoad();
+            tpl = _this.transformTemplate(tpl);
             _this.$el.html(tpl);
+            _this.afterTemplateLoad();
             _this.$el.addClass(_this.constructor.name);
+            _this.beforeBind();
             _this._binding = rivets.bind(_this.el, _this);
+            _this.afterBind();
             return _this.afterRender();
           };
         })(this));

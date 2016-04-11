@@ -21,6 +21,7 @@ class Burn
         routePath = "#{controller::scope}/#{route}(/)"
       else
         routePath = "#{route}(/)"
+        routePath = route if route is '*path'
       Burn.router.registerRoute(routePath, name, controller)
 
   # Registers a `Burn.View` with Burn

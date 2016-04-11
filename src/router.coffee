@@ -16,7 +16,7 @@ class Burn.Router extends Backbone.Router
         for arg in arguments
           continue if _.isNull(arg)
           match = re.exec(path)
-          params[match[1]] = arg
+          params[match[1]] = arg if match and match[1]
       ctrl.runBeforeFilters.apply(ctrl, [params, path, name]).done(->
         ctrl[name].apply(ctrl, [params])
         ctrl.runAfterFilters.apply(ctrl, [params, path, name])

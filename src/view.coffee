@@ -16,6 +16,15 @@ class Burn.View extends Backbone.View
   # Called after view is destroyed. Override in your view.
   afterDestroy: ->
 
+  beforeBind: ->
+  afterBind: ->
+
+  beforeTemplateLoad: ->
+  afterTemplateLoad: ->
+
+  transformTemplate: (tpl) ->
+    tpl
+
   # @nodoc
   constructor: (opts) ->
     @options = opts
@@ -31,9 +40,14 @@ class Burn.View extends Backbone.View
     @beforeRender()
     if @template
       new Burn.Template(@template).load().then (tpl) =>
+        @beforeTemplateLoad()
+        tpl = @transformTemplate(tpl)
         @$el.html(tpl)
+        @afterTemplateLoad()
         @$el.addClass(@constructor.name)
+        @beforeBind()
         @_binding = rivets.bind @el, @
+        @afterBind()
         @afterRender()
     @el
 
