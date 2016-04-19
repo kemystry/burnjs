@@ -56,14 +56,14 @@ class Burn.Model extends Backbone.RelationalModel
       attributes = _.omit(attributes, @excludeFromJSON)
     attributes
 
-  validateField: (field) =>
+  validateField: (field) ->
     val = @preValidate(field, @get(field))
     if val
       @validations.set(field, val)
     else
       @validations.unset(field)
 
-  fetch: =>
+  fetch: ->
     @fetching = true
     if @_xhr
       @_xhr.abort() if @_xhr.readyState isnt 4
@@ -75,7 +75,7 @@ class Burn.Model extends Backbone.RelationalModel
       @fetching = false
     @_xhr
 
-  save: =>
+  save: ->
     @_xhr = super
     return @_xhr unless @_xhr
     @saving = true
@@ -85,7 +85,7 @@ class Burn.Model extends Backbone.RelationalModel
       @saving = false
     @_xhr
 
-  destroy: =>
+  destroy: ->
     @_xhr = super
     return @_xhr unless @_xhr
     @destroying = true

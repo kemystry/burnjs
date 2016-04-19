@@ -470,11 +470,7 @@
     Model.prototype.saving = false;
 
     function Model() {
-      this.destroy = bind(this.destroy, this);
-      this.save = bind(this.save, this);
-      this.fetch = bind(this.fetch, this);
-      this.validateField = bind(this.validateField, this);
-      this.validations = new Burn.Model();
+      this.validations = new Backbone.Model();
       this.on('request', function() {
         return this.updating = true;
       });
