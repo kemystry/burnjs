@@ -1,11 +1,5 @@
 class Burn.Model extends Backbone.RelationalModel
 
-  # @attributes =
-  #   name: 'string'
-  #   cost: 'number'
-  #   visible: 'boolean'
-  #   createdAt: 'datetime'
-
   fetching: false
   destroying: false
   updating: false
@@ -13,7 +7,7 @@ class Burn.Model extends Backbone.RelationalModel
 
   # @nodoc
   constructor: ->
-    @validations = new Burn.Model()
+    @validations = new Backbone.Model()
     @on('request', ->
       @updating = true
     )
