@@ -20,11 +20,11 @@
   "author": "Kerry Gould",
   "license": "ISC",
   "dependencies": {
+    "jquery": "^2.1.4",
+    "underscore": "^1.8.3",
     "backbone": "^1.2.3",
     "backbone-relational": "^0.10.0",
-    "jquery": "^2.1.4",
-    "lodash": "^3.10.1",
-    "minimist": "^1.2.0",
+    "backbone-validation": "^0.11.5",
     "rivets": "^0.8.1"
   },
   "devDependencies": {

@@ -282,6 +282,12 @@
             match = re.exec(path);
             if (match && match[1]) {
               params[match[1]] = arg;
+            } else {
+              params.query = _.chain(arg.split('&')).map(function(params) {
+                var p;
+                p = params.split('=');
+                return [p[0], decodeURIComponent(p[1])];
+              }).object().value();
             }
           }
         }
@@ -455,9 +461,20 @@
   Burn.Model = (function(superClass) {
     extend(Model, superClass);
 
+    Model.prototype.fetching = false;
+
+    Model.prototype.destroying = false;
+
     Model.prototype.updating = false;
 
+    Model.prototype.saving = false;
+
     function Model() {
+      this.destroy = bind(this.destroy, this);
+      this.save = bind(this.save, this);
+      this.fetch = bind(this.fetch, this);
+      this.validateField = bind(this.validateField, this);
+      this.validations = new Burn.Model();
       this.on('request', function() {
         return this.updating = true;
       });
@@ -467,6 +484,27 @@
       this.on('error', function() {
         return this.updating = false;
       });
+      this.on('change', function(model, options) {
+        var i, key, len, ref, results;
+        ref = _.keys(model.changed);
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+          key = ref[i];
+          results.push(model.validate(key));
+        }
+        return results;
+      });
+      this.on('validated:invalid', (function(_this) {
+        return function(model, errors) {
+          _this.validations.clear();
+          return _this.validations.set(errors);
+        };
+      })(this));
+      this.on('validated:valid', (function(_this) {
+        return function(model, errors) {
+          return _this.validations.clear();
+        };
+      })(this));
       Model.__super__.constructor.apply(this, arguments);
     }
 
@@ -505,9 +543,81 @@
       return attributes;
     };
 
+    Model.prototype.validateField = function(field) {
+      var val;
+      val = this.preValidate(field, this.get(field));
+      if (val) {
+        return this.validations.set(field, val);
+      } else {
+        return this.validations.unset(field);
+      }
+    };
+
+    Model.prototype.fetch = function() {
+      this.fetching = true;
+      if (this._xhr) {
+        if (this._xhr.readyState !== 4) {
+          this._xhr.abort();
+        }
+        this._xhr = null;
+      }
+      this._xhr = Model.__super__.fetch.apply(this, arguments);
+      this._xhr.done((function(_this) {
+        return function() {
+          return _this.fetching = false;
+        };
+      })(this));
+      this._xhr.fail((function(_this) {
+        return function() {
+          return _this.fetching = false;
+        };
+      })(this));
+      return this._xhr;
+    };
+
+    Model.prototype.save = function() {
+      this._xhr = Model.__super__.save.apply(this, arguments);
+      if (!this._xhr) {
+        return this._xhr;
+      }
+      this.saving = true;
+      this._xhr.done((function(_this) {
+        return function() {
+          return _this.saving = false;
+        };
+      })(this));
+      this._xhr.fail((function(_this) {
+        return function() {
+          return _this.saving = false;
+        };
+      })(this));
+      return this._xhr;
+    };
+
+    Model.prototype.destroy = function() {
+      this._xhr = Model.__super__.destroy.apply(this, arguments);
+      if (!this._xhr) {
+        return this._xhr;
+      }
+      this.destroying = true;
+      this._xhr.done((function(_this) {
+        return function() {
+          return _this.destroying = false;
+        };
+      })(this));
+      this._xhr.fail((function(_this) {
+        return function() {
+          return _this.destroying = false;
+        };
+      })(this));
+      return this._xhr;
+    };
+
     return Model;
 
   })(Backbone.RelationalModel);
+
+  _.extend(Burn.Model.prototype, Backbone.Validation.mixin);
 
   Burn.Collection = (function(superClass) {
     extend(Collection, superClass);

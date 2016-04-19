@@ -16,7 +16,13 @@ class Burn.Router extends Backbone.Router
         for arg in arguments
           continue if _.isNull(arg)
           match = re.exec(path)
-          params[match[1]] = arg if match and match[1]
+          if match and match[1]
+            params[match[1]] = arg
+          else
+            params.query = _.chain(arg.split('&')).map((params) ->
+              p = params.split('=')
+              [p[0], decodeURIComponent(p[1])]
+            ).object().value()
       ctrl.runBeforeFilters.apply(ctrl, [params, path, name]).done(->
         ctrl[name].apply(ctrl, [params])
         ctrl.runAfterFilters.apply(ctrl, [params, path, name])
