@@ -1,5 +1,5 @@
 (function() {
-  var AddClassBinder, BgImageBinder, Burn, IncludeComponent, RhrefBinder,
+  var AddClassBinder, BgImageBinder, Burn, EachBinder, IncludeComponent, RhrefBinder, ViewBinder,
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty,
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -944,13 +944,141 @@
 
   Burn.registerBinder('bg-img', BgImageBinder);
 
+  EachBinder = {
+    block: true,
+    priority: 4000,
+    bind: function(el) {
+      var attr, i, len, ref, view;
+      if (this.marker == null) {
+        attr = [this.view.prefix, this.type].join('-').replace('--', '-');
+        this.marker = document.createComment(" rivets: " + this.type + " ");
+        this.iterated = [];
+        el.removeAttribute(attr);
+        el.parentNode.insertBefore(this.marker, el);
+        el.parentNode.removeChild(el);
+      } else {
+        ref = this.iterated;
+        for (i = 0, len = ref.length; i < len; i++) {
+          view = ref[i];
+          view.bind();
+        }
+      }
+    },
+    unbind: function(el) {
+      var i, len, ref, view;
+      if (this.iterated != null) {
+        ref = this.iterated;
+        for (i = 0, len = ref.length; i < len; i++) {
+          view = ref[i];
+          view.unbind();
+        }
+      }
+    },
+    routine: function(el, collection) {
+      var binding, data, i, index, j, key, len, len1, model, modelName, nodes, options, previous, ref, ref1, ref2, template, view;
+      modelName = this.args[0];
+      collection || (collection = []);
+      if (this.iterated.length > collection.length) {
+        index = 0;
+        while (index < this.iterated.length) {
+          if (!(collection.indexOf(this.iterated[index].models[modelName]) > -1)) {
+            view = this.iterated.splice(index, 1)[0];
+            view.unbind();
+            $(view.els).remove();
+          } else {
+            index++;
+          }
+        }
+      } else if (this.iterated.length < collection.length) {
+        index = 0;
+        while (index < collection.length) {
+          model = collection[index];
+          if (this.iterated[index] && this.iterated[index].models[modelName] !== model) {
+            data = {
+              index: index
+            };
+            data["%" + modelName + "%"] = index;
+            if (data[modelName] == null) {
+              data[modelName] = model;
+            }
+            template = el.cloneNode(true);
+            options = this.view.options();
+            options.preloadData = true;
+            ref = this.view.models;
+            for (key in ref) {
+              model = ref[key];
+              data[key] = model;
+            }
+            view = rivets.bind(template, data, options);
+            this.iterated.splice(index, 0, view);
+            nodes = $(this.marker).parent().find('> ' + el.nodeName);
+            nodes.eq(index).before(template);
+          }
+          index++;
+        }
+      }
+      for (index = i = 0, len = collection.length; i < len; index = ++i) {
+        model = collection[index];
+        data = {
+          index: index
+        };
+        data["%" + modelName + "%"] = index;
+        if (data[modelName] == null) {
+          data[modelName] = model;
+        }
+        if (this.iterated[index] == null) {
+          ref1 = this.view.models;
+          for (key in ref1) {
+            model = ref1[key];
+            data[key] = model;
+          }
+          previous = this.iterated.length ? this.iterated[this.iterated.length - 1].els[0] : this.marker;
+          options = this.view.options();
+          options.preloadData = true;
+          template = el.cloneNode(true);
+          view = rivets.bind(template, data, options);
+          this.iterated.push(view);
+          this.marker.parentNode.insertBefore(template, previous.nextSibling);
+        }
+      }
+      if (el.nodeName === 'OPTION') {
+        ref2 = this.view.bindings;
+        for (j = 0, len1 = ref2.length; j < len1; j++) {
+          binding = ref2[j];
+          if (binding.el === this.marker.parentNode && binding.type === 'value') {
+            binding.sync();
+          }
+        }
+      }
+    },
+    update: function(models) {
+      var data, i, key, len, model, ref, view;
+      data = {};
+      for (key in models) {
+        model = models[key];
+        if (key !== this.args[0]) {
+          data[key] = model;
+        }
+      }
+      ref = this.iterated;
+      for (i = 0, len = ref.length; i < len; i++) {
+        view = ref[i];
+        view.update(data);
+      }
+    }
+  };
+
+  Burn.registerBinder('each-*', EachBinder);
+
   RhrefBinder = {
     bind: function(ele) {
       return $(ele).on('click', function(event) {
-        event.preventDefault();
-        return Burn.router.navigate($(this).attr('rhref'), {
-          trigger: true
-        });
+        if (event.target === event.currentTarget) {
+          event.preventDefault();
+          return Burn.router.navigate($(this).attr('rhref'), {
+            trigger: true
+          });
+        }
       });
     },
     unbind: function(ele) {
@@ -960,12 +1088,63 @@
       if (!value) {
         value = this.keypath;
       }
-      $(ele).attr('rhref', value);
-      return $(ele).attr('href', value);
+      $(ele).attr('rhref', value.replace(/^\//, ''));
+      return $(ele).attr('href', '#' + value.replace(/^\//, ''));
     }
   };
 
   Burn.registerBinder('rhref', RhrefBinder);
+
+  ViewBinder = {
+    block: false,
+    priority: 9000,
+    bind: function(el) {
+      var attr, i, len, model, parseAttr, props, ref, val, view;
+      parseAttr = function(model, keypath) {
+        var v;
+        v = rivets._.sightglass(model, keypath, null, {
+          root: rivets.rootInterface,
+          adapters: rivets.adapters
+        });
+        return rivets.adapters[':'].get(v.target, v.key.path);
+      };
+      props = {};
+      el.removeAttribute('brn-view');
+      ref = el.attributes;
+      for (i = 0, len = ref.length; i < len; i++) {
+        attr = ref[i];
+        if (attr.value.indexOf(':') > -1 && attr.value.indexOf('!') !== 0) {
+          model = parseAttr(this.view.models, attr.value);
+        } else if (attr.name !== 'view') {
+          if (!(attr.name.indexOf('brn-') > -1)) {
+            model = this.view.models[attr.value];
+          }
+        }
+        if (model) {
+          props[S(attr.name).camelize().s] = model;
+        } else {
+          if (attr.value.indexOf('!') === 0) {
+            val = attr.value.substr(1);
+          } else {
+            val = attr.value;
+          }
+          props[S(attr.name).camelize().s] = val;
+        }
+      }
+      view = $(el).attr('view');
+      this._view = new Burn.views[view]({
+        el: el,
+        properties: props
+      });
+      return this._view.render();
+    },
+    unbind: function(el) {
+      return this._view.destroy();
+    },
+    routine: function(el) {}
+  };
+
+  Burn.registerBinder('view', ViewBinder);
 
   IncludeComponent = {
     "static": ['view', 'tag'],
