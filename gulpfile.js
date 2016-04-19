@@ -7,6 +7,19 @@ batch   = require('gulp-batch'),
 codo    = require('gulp-codo'),
 util    = require('gulp-util');
 
+bundledSource = [
+  'node_modules/jquery/dist/jquery.js',
+  'node_modules/underscore/underscore.js',
+  'node_modules/string/dist/string.js',
+  'node_modules/backbone/backbone.js',
+  'node_modules/backbone-relational/backbone-relational.js',
+  'node_modules/backbone-validation/dist/backbone-validation.js',
+  'node_modules/rivets/dist/rivets.bundled.min.js',
+  'node_modules/moment/moment.js',
+  'node_modules/numeral/numeral.js',
+  'tmp_burn.js'
+]
+
 source = [
   'src/burn.coffee',
   'src/cache.coffee',
@@ -36,14 +49,26 @@ gulp.task('doc', function () {
 });
 
 gulp.task('build', function() {
-  burn = gulp.src(source)
+  return gulp.src(source)
     .pipe(concat({ path: 'burn.js' }))
     .pipe(coffee().on('error', util.log))
     .pipe(gulp.dest('./'));
 });
 
+gulp.task('build-bundled', function() {
+  var burn = gulp.src(source)
+    .pipe(concat({ path: 'tmp_burn.js' }))
+    .pipe(coffee().on('error', util.log))
+    .pipe(gulp.dest('./'));
+  burn.on('end', function () {
+    gulp.src(bundledSource)
+      .pipe(concat({ path: 'burn.bundled.js' }))
+      .pipe(gulp.dest('./'));
+  });
+});
+
 gulp.task('build-min', function () {
-  burnMin = gulp.src(source)
+  return gulp.src(source)
     .pipe(concat({ path: 'burn.min.js' }))
     .pipe(coffee().on('error', util.log))
     .pipe(uglify({ mangle: false, preserveComments: 'license' }))
@@ -51,6 +76,7 @@ gulp.task('build-min', function () {
 });
 
 gulp.task('dist', function () {
+  gulp.start('build-bundled');
   gulp.start('build');
   gulp.start('build-min');
   gulp.start('doc');

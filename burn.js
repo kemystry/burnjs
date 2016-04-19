@@ -1146,6 +1146,86 @@
 
   Burn.registerBinder('view', ViewBinder);
 
+  Burn.registerFormatter('formatDate', function(target, val) {
+    var shortcuts;
+    shortcuts = {
+      'long': 'MMM Do, YYYY',
+      'short': 'MM/DD/YY',
+      'datetime-long': 'MMM Do, YYYY @ h:mm a',
+      'datetime-short': 'MM/DD/YYYY @ h:mm a'
+    };
+    if (shortcuts[val]) {
+      val = shortcuts[val];
+    }
+    if (target) {
+      return moment(target).format(val);
+    } else {
+      return target;
+    }
+  });
+
+  Burn.registerFormatter('numeral', function(target, val) {
+    if (_.isNaN(parseFloat(target))) {
+      return target;
+    } else {
+      return numeral(target).format(val);
+    }
+  });
+
+  Burn.registerFormatter('currency', function(target, val) {
+    return rivets.formatters.numeral(target, '$0,0.00');
+  });
+
+  Burn.registerFormatter('formatNumber', function(target, val) {
+    return rivets.formatters.numeral(target, '0,0.00');
+  });
+
+  Burn.registerFormatter('append', function(target, val) {
+    if (target) {
+      return "" + target + val;
+    } else {
+      return target;
+    }
+  });
+
+  Burn.registerFormatter('prepend', function(target, val) {
+    if (target) {
+      return "" + val + target;
+    } else {
+      return target;
+    }
+  });
+
+  Burn.registerFormatter('shorten', function(target, val, ellipsis) {
+    var s;
+    if (ellipsis == null) {
+      ellipsis = false;
+    }
+    if (_.isUndefinedOrNull(target) || (target && target.length <= val)) {
+      return target;
+    }
+    if (ellipsis) {
+      val = val - 3;
+    }
+    s = target.substring(0, val);
+    if (ellipsis) {
+      s = s + "...";
+    }
+    return s;
+  });
+
+  Burn.registerFormatter('to-string', function(target) {
+    if (_.isUndefinedOrNull(target)) {
+      return '';
+    } else {
+      return target.toString();
+    }
+  });
+
+  Burn.registerFormatter('eq', function(target, val) {
+    return target === val;
+  });
+
   IncludeComponent = {
     "static": ['view', 'tag'],
     template: function() {
