@@ -209,32 +209,32 @@
     _factory = function(action) {
       return function(model, keypath, callback) {
         var eventName, value;
-        if (model instanceof Burn.Model) {
+        if (model instanceof Backbone.RelationalModel) {
           value = model.get(keypath);
           eventName = keypath === '*' ? 'change' : "change:" + keypath;
           model[action](eventName, callback);
-          if (value instanceof Burn.Collection) {
+          if (value instanceof Backbone.Collection) {
             return value[action]('add remove reset sort change', callback);
           }
-        } else if (model instanceof Burn.Collection && keypath === 'models') {
+        } else if (model instanceof Backbone.Collection && keypath === 'models') {
           return model[action]('add remove reset sort change', callback);
         }
       };
     };
     _getter = function(obj, keypath) {
       var value;
-      if (obj instanceof Burn.Model) {
+      if (obj instanceof Backbone.RelationalModel) {
         value = keypath === '*' ? obj.attributes : obj.get(keypath);
-        if (value instanceof Burn.Collection) {
+        if (value instanceof Backbone.Collection) {
           value = value.models;
         }
-      } else if (obj instanceof Burn.Collection) {
+      } else if (obj instanceof Backbone.Collection) {
         value = obj.models;
       }
       return value;
     };
     _setter = function(obj, keypath, value) {
-      if (!(obj instanceof Burn.Model || obj instanceof Burn.Collection)) {
+      if (!(obj instanceof Backbone.RelationalModel || obj instanceof Backbone.Collection)) {
         return;
       }
       if (keypath === '*') {
@@ -470,7 +470,19 @@
     Model.prototype.saving = false;
 
     function Model() {
-      this.validations = new Backbone.Model();
+      this.validations = new Backbone.RelationalModel();
+      this.on('validated:invalid', (function(_this) {
+        return function(model, errors) {
+          return _this.validations.set(errors, {
+            merge: false
+          });
+        };
+      })(this));
+      this.on('validated:valid', (function(_this) {
+        return function(model, errors) {
+          return _this.validations.clear();
+        };
+      })(this));
       this.on('request', function() {
         return this.updating = true;
       });
@@ -490,17 +502,6 @@
         }
         return results;
       });
-      this.on('validated:invalid', (function(_this) {
-        return function(model, errors) {
-          _this.validations.clear();
-          return _this.validations.set(errors);
-        };
-      })(this));
-      this.on('validated:valid', (function(_this) {
-        return function(model, errors) {
-          return _this.validations.clear();
-        };
-      })(this));
       Model.__super__.constructor.apply(this, arguments);
     }
 

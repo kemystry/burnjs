@@ -7,7 +7,13 @@ class Burn.Model extends Backbone.RelationalModel
 
   # @nodoc
   constructor: ->
-    @validations = new Backbone.Model()
+    @validations = new Backbone.RelationalModel()
+    @on('validated:invalid', (model, errors) =>
+      @validations.set(errors, { merge: false })
+    )
+    @on('validated:valid', (model, errors) =>
+      @validations.clear()
+    )
     @on('request', ->
       @updating = true
     )
@@ -19,13 +25,6 @@ class Burn.Model extends Backbone.RelationalModel
     )
     @on('change', (model, options) ->
       model.validate(key) for key in _.keys(model.changed)
-    )
-    @on('validated:invalid', (model, errors) =>
-      @validations.clear()
-      @validations.set(errors)
-    )
-    @on('validated:valid', (model, errors) =>
-      @validations.clear()
     )
     super
 

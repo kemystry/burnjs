@@ -84,8 +84,10 @@ gulp.task('dist', function () {
 
 gulp.task('default', function() {
   gulp.start('build');
+  gulp.start('build-bundled');
   watch('src/**/*.coffee', batch(function (events, done) {
         gulp.start('build', done);
+        gulp.start('build-bundled', done);
     }));
 
 });
