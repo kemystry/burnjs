@@ -621,6 +621,8 @@
 
     Collection.prototype.updating = false;
 
+    Collection.prototype.fetching = false;
+
     function Collection() {
       this.on('request', function(collection) {
         if (collection !== this) {
@@ -654,6 +656,28 @@
         path = this.resourcePath;
       }
       return Burn.resourceHost + "/" + path + "/";
+    };
+
+    Collection.prototype.fetch = function() {
+      this.fetching = true;
+      if (this._xhr) {
+        if (this._xhr.readyState !== 4) {
+          this._xhr.abort();
+        }
+        this._xhr = null;
+      }
+      this._xhr = Collection.__super__.fetch.apply(this, arguments);
+      this._xhr.done((function(_this) {
+        return function() {
+          return _this.fetching = false;
+        };
+      })(this));
+      this._xhr.fail((function(_this) {
+        return function() {
+          return _this.fetching = false;
+        };
+      })(this));
+      return this._xhr;
     };
 
     return Collection;

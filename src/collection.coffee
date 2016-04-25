@@ -1,6 +1,7 @@
 class Burn.Collection extends Backbone.Collection
 
   updating: false
+  fetching: false
 
   # @nodoc
   constructor: ->
@@ -27,3 +28,15 @@ class Burn.Collection extends Backbone.Collection
     else
       path = @resourcePath
     "#{Burn.resourceHost}/#{path}/"
+
+  fetch: ->
+    @fetching = true
+    if @_xhr
+      @_xhr.abort() if @_xhr.readyState isnt 4
+      @_xhr = null
+    @_xhr = super
+    @_xhr.done =>
+      @fetching = false
+    @_xhr.fail =>
+      @fetching = false
+    @_xhr
