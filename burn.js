@@ -964,6 +964,9 @@
   Burn.registerBinder('add-class', AddClassBinder);
 
   BgImageBinder = function(el, value) {
+    if (value == null) {
+      value = '';
+    }
     value = value.replace("'", "%27");
     return $(el).css('background-image', "url('" + value + "')");
   };
