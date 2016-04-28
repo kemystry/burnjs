@@ -9,7 +9,8 @@ class Burn.Model extends Backbone.RelationalModel
   constructor: ->
     @validations = new Backbone.RelationalModel()
     @on('validated:invalid', (model, errors) =>
-      @validations.set(errors, { merge: false })
+      @validations.clear()
+      @validations.set(errors)
     )
     @on('validated:valid', (model, errors) =>
       @validations.clear()

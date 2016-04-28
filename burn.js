@@ -473,9 +473,8 @@
       this.validations = new Backbone.RelationalModel();
       this.on('validated:invalid', (function(_this) {
         return function(model, errors) {
-          return _this.validations.set(errors, {
-            merge: false
-          });
+          _this.validations.clear();
+          return _this.validations.set(errors);
         };
       })(this));
       this.on('validated:valid', (function(_this) {
