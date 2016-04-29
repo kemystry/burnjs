@@ -51,7 +51,7 @@ class Burn.Layout
       container.destroy()
       delete @attachments[name]
       delete @[name]
-    @el.remove()
+    @$el.remove()
 
   # @nodoc
   # @private

@@ -851,7 +851,7 @@
         delete this.attachments[name];
         delete this[name];
       }
-      return this.el.remove();
+      return this.$el.remove();
     };
 
     Layout.prototype._initAttachments = function() {
