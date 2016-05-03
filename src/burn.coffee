@@ -15,7 +15,7 @@ class Burn
   ###
   @registerController: (name, controller) ->
     @router or= new Burn.Router()
-    controller.name or= name
+    controller.name = name
     @controllers[name] = controller
     for route, funcName of controller::routes
       if controller::scope
@@ -28,19 +28,19 @@ class Burn
   # Registers a `Burn.View` with Burn
   # @param [Burn.View] view
   @registerView: (name, view) ->
-    view.name or= name
+    view.name = name
     @views[name] = view
 
   # Registers a `Burn.Model` with Burn
   # @param [Burn.Model] model
   @registerModel: (name, model) ->
-    model.name or= name
+    model.name = name
     @models[name] = model
 
   # Registers a `Burn.Collection` with Burn
   # @param [Burn.Collection] collection
   @registerCollection: (name, collection) ->
-    collection.name or= name
+    collection.name = name
     @collections[name] = collection
 
   # Registers a binder with Burn

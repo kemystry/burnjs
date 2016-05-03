@@ -21383,7 +21383,7 @@ Backbone.Validation = (function(_){
     Burn.registerController = function(name, controller) {
       var funcName, ref, results, route, routePath;
       this.router || (this.router = new Burn.Router());
-      controller.name || (controller.name = name);
+      controller.name = name;
       this.controllers[name] = controller;
       ref = controller.prototype.routes;
       results = [];
@@ -21403,17 +21403,17 @@ Backbone.Validation = (function(_){
     };
 
     Burn.registerView = function(name, view) {
-      view.name || (view.name = name);
+      view.name = name;
       return this.views[name] = view;
     };
 
     Burn.registerModel = function(name, model) {
-      model.name || (model.name = name);
+      model.name = name;
       return this.models[name] = model;
     };
 
     Burn.registerCollection = function(name, collection) {
-      collection.name || (collection.name = name);
+      collection.name = name;
       return this.collections[name] = collection;
     };
 
