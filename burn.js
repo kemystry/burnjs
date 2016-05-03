@@ -29,14 +29,15 @@
     @param [Burn.Controller] the controller to register
      */
 
-    Burn.registerController = function(controller) {
-      var name, ref, results, route, routePath;
+    Burn.registerController = function(name, controller) {
+      var funcName, ref, results, route, routePath;
       this.router || (this.router = new Burn.Router());
-      this.controllers[controller.name] = controller;
+      controller.name || (controller.name = name);
+      this.controllers[name] = controller;
       ref = controller.prototype.routes;
       results = [];
       for (route in ref) {
-        name = ref[route];
+        funcName = ref[route];
         if (controller.prototype.scope) {
           routePath = controller.prototype.scope + "/" + route + "(/)";
         } else {
@@ -45,21 +46,24 @@
             routePath = route;
           }
         }
-        results.push(Burn.router.registerRoute(routePath, name, controller));
+        results.push(Burn.router.registerRoute(routePath, funcName, controller));
       }
       return results;
     };
 
-    Burn.registerView = function(view) {
-      return this.views[view.name] = view;
+    Burn.registerView = function(name, view) {
+      view.name || (view.name = name);
+      return this.views[name] = view;
     };
 
-    Burn.registerModel = function(model) {
-      return this.models[model.name] = model;
+    Burn.registerModel = function(name, model) {
+      model.name || (model.name = name);
+      return this.models[name] = model;
     };
 
-    Burn.registerCollection = function(collection) {
-      return this.collections[collection.name] = collection;
+    Burn.registerCollection = function(name, collection) {
+      collection.name || (collection.name = name);
+      return this.collections[name] = collection;
     };
 
     Burn.registerBinder = function(name, binder) {

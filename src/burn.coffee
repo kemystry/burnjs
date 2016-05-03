@@ -13,31 +13,35 @@ class Burn
   Registers a Burn.Controller and sets up the controller's routes
   @param [Burn.Controller] the controller to register
   ###
-  @registerController: (controller) ->
+  @registerController: (name, controller) ->
     @router or= new Burn.Router()
-    @controllers[controller.name] = controller
-    for route, name of controller::routes
+    controller.name or= name
+    @controllers[name] = controller
+    for route, funcName of controller::routes
       if controller::scope
         routePath = "#{controller::scope}/#{route}(/)"
       else
         routePath = "#{route}(/)"
         routePath = route if route is '*path'
-      Burn.router.registerRoute(routePath, name, controller)
+      Burn.router.registerRoute(routePath, funcName, controller)
 
   # Registers a `Burn.View` with Burn
   # @param [Burn.View] view
-  @registerView: (view) ->
-    @views[view.name] = view
+  @registerView: (name, view) ->
+    view.name or= name
+    @views[name] = view
 
   # Registers a `Burn.Model` with Burn
   # @param [Burn.Model] model
-  @registerModel: (model) ->
-    @models[model.name] = model
+  @registerModel: (name, model) ->
+    model.name or= name
+    @models[name] = model
 
   # Registers a `Burn.Collection` with Burn
   # @param [Burn.Collection] collection
-  @registerCollection: (collection) ->
-    @collections[collection.name] = collection
+  @registerCollection: (name, collection) ->
+    collection.name or= name
+    @collections[name] = collection
 
   # Registers a binder with Burn
   # @param [String] name
