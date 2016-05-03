@@ -14,7 +14,8 @@ bundledSource = [
   'node_modules/backbone/backbone.js',
   'node_modules/backbone-relational/backbone-relational.js',
   'node_modules/backbone-validation/dist/backbone-validation.js',
-  'node_modules/rivets/dist/rivets.bundled.min.js',
+  'node_modules/sightglass/index.js',
+  'node_modules/rivets/dist/rivets.js',
   'node_modules/moment/moment.js',
   'node_modules/numeral/numeral.js',
   'tmp_burn.js'
