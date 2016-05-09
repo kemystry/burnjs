@@ -23873,6 +23873,12 @@ Backbone.Validation = (function(_){
             return _this.afterRender();
           };
         })(this));
+      } else {
+        this.$el.addClass(this.constructor.name);
+        this.beforeBind();
+        this._binding = rivets.bind(this.el, this);
+        this.afterBind();
+        this.afterRender();
       }
       return this.el;
     };

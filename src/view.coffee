@@ -49,6 +49,12 @@ class Burn.View extends Backbone.View
         @_binding = rivets.bind @el, @
         @afterBind()
         @afterRender()
+    else
+      @$el.addClass(@constructor.name)
+      @beforeBind()
+      @_binding = rivets.bind @el, @
+      @afterBind()
+      @afterRender()
     @el
 
   # Destroys view and removes from DOM
