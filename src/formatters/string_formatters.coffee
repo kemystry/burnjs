@@ -1,8 +1,8 @@
 Burn.registerFormatter 'append', (target, val) ->
-  if target then "#{target}#{val}" else target
+  unless _.isUndefinedOrNull(target) then "#{target}#{val}" else target
 
 Burn.registerFormatter 'prepend', (target, val) ->
-  if target then "#{val}#{target}" else target
+  unless _.isUndefinedOrNull(target) then "#{val}#{target}" else target
 
 Burn.registerFormatter 'shorten', (target, val, ellipsis = false) ->
   if _.isUndefinedOrNull(target) or (target and target.length <= val)

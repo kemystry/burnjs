@@ -24163,7 +24163,7 @@ Backbone.Validation = (function(_){
   });
 
   Burn.registerFormatter('append', function(target, val) {
-    if (target) {
+    if (!_.isUndefinedOrNull(target)) {
       return "" + target + val;
     } else {
       return target;
@@ -24171,7 +24171,7 @@ Backbone.Validation = (function(_){
   });
 
   Burn.registerFormatter('prepend', function(target, val) {
-    if (target) {
+    if (!_.isUndefinedOrNull(target)) {
       return "" + val + target;
     } else {
       return target;
