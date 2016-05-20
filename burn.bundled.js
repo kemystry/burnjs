@@ -23439,16 +23439,6 @@ Backbone.Validation = (function(_){
       this.on('error', function() {
         return this.updating = false;
       });
-      this.on('change', function(model, options) {
-        var i, key, len, ref, results;
-        ref = _.keys(model.changed);
-        results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-          key = ref[i];
-          results.push(model.validate(key));
-        }
-        return results;
-      });
       Model.__super__.constructor.apply(this, arguments);
     }
 

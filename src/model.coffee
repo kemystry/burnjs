@@ -24,9 +24,6 @@ class Burn.Model extends Backbone.RelationalModel
     @on('error', ->
       @updating = false
     )
-    @on('change', (model, options) ->
-      model.validate(key) for key in _.keys(model.changed)
-    )
     super
 
   # @nodoc
