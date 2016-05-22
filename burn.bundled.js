@@ -23218,7 +23218,6 @@ Backbone.Validation = (function(_){
           }
           ctrl = Burn.currentController = new controller();
         }
-        console.log('TODO: Add layout attr to controllers,\nonly re-layout when needed');
         params = {};
         if (arguments.length > 0) {
           re = /:([a-zA-Z0-9_\-]+)/g;
@@ -23241,6 +23240,8 @@ Backbone.Validation = (function(_){
         }
         return ctrl.runBeforeFilters.apply(ctrl, [params, path, name]).done(function() {
           ctrl[name].apply(ctrl, [params]);
+          ctrl.currentRoutePath = path;
+          ctrl.currentRouteName = name;
           return ctrl.runAfterFilters.apply(ctrl, [params, path, name]);
         }).fail(function(message) {
           return ctrl.onFilterFail(message, params, path, name);
