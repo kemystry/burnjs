@@ -8,8 +8,8 @@ class Burn.Router extends Backbone.Router
       else
         Burn.currentController.destroy() if Burn.currentController
         ctrl = Burn.currentController = new controller()
-      console.log('''TODO: Add layout attr to controllers,
-      only re-layout when needed''')
+      # console.log('''TODO: Add layout attr to controllers,
+      # only re-layout when needed''')
       params = {}
       if arguments.length > 0
         re = /:([a-zA-Z0-9_\-]+)/g
@@ -25,6 +25,8 @@ class Burn.Router extends Backbone.Router
             ).object().value()
       ctrl.runBeforeFilters.apply(ctrl, [params, path, name]).done(->
         ctrl[name].apply(ctrl, [params])
+        ctrl.currentRoutePath = path
+        ctrl.currentRouteName = name
         ctrl.runAfterFilters.apply(ctrl, [params, path, name])
       ).fail((message) ->
         ctrl.onFilterFail(message, params, path, name)
