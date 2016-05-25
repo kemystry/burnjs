@@ -441,7 +441,6 @@
     Controller.prototype._buildFilterChain = function(name, filters) {
       var action, chain, opts, run;
       chain = [];
-      console.log("TODO: Change from object to Array to make sure they run in order");
       for (action in filters) {
         opts = filters[action];
         run = false;

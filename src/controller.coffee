@@ -91,9 +91,9 @@ class Burn.Controller
   _buildFilterChain: (name, filters) ->
     chain = []
     # Change this to an Array
-    console.log("""
-    TODO: Change from object to Array to make sure they run in order
-    """)
+    # console.log("""
+    # TODO: Change from object to Array to make sure they run in order
+    # """)
     for action, opts of filters
       run = false
       if opts == 'all'
