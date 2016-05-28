@@ -35,7 +35,7 @@ class Burn.Router extends Backbone.Router
 
   parseUrl: (url) ->
     path = url.match(/#([^?]+)/) or ''
-    currentParams = url.match(/([^&?]=[^&?])/g)
+    currentParams = url.match(/([^&?]+=[^&?]+)/g)
     query = {}
     if currentParams and currentParams.length > 0
       _.each currentParams, (param) ->

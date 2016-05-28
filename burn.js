@@ -311,7 +311,7 @@
     Router.prototype.parseUrl = function(url) {
       var currentParams, path, query;
       path = url.match(/#([^?]+)/) || '';
-      currentParams = url.match(/([^&?]=[^&?])/g);
+      currentParams = url.match(/([^&?]+=[^&?]+)/g);
       query = {};
       if (currentParams && currentParams.length > 0) {
         _.each(currentParams, function(param) {
