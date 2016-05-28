@@ -338,7 +338,7 @@
         };
       }
       parsedUrl = this.parseUrl(Backbone.history.location.hash);
-      params = _.extend({}, parsedUrl.query, params);
+      params = _.extendOwn({}, parsedUrl.query, params);
       query = $.param(params);
       return this.navigate("#" + parsedUrl.path + "?" + query, {
         trigger: opts.trigger
