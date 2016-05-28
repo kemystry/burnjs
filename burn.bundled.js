@@ -22951,7 +22951,7 @@ Backbone.Validation = (function(_){
   Burn = (function() {
     function Burn() {}
 
-    Burn.version = '{VERSION}';
+    Burn.version = '1.1.0';
 
     Burn.adapters = {};
 

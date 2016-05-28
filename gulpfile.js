@@ -67,6 +67,7 @@ gulp.task('build-bundled', function() {
   var burn = gulp.src(source)
     .pipe(concat({ path: 'tmp_burn.js' }))
     .pipe(coffee().on('error', util.log))
+    .pipe(replace('{VERSION}', pkg.version))
     .pipe(gulp.dest('./'));
   burn.on('end', function () {
     gulp.src(bundledSource)
@@ -79,6 +80,7 @@ gulp.task('build-min', function () {
   return gulp.src(source)
     .pipe(concat({ path: 'burn.min.js' }))
     .pipe(coffee().on('error', util.log))
+    .pipe(replace('{VERSION}', pkg.version))
     .pipe(uglify({ mangle: false, preserveComments: 'license' }))
     .pipe(gulp.dest('./'));
 });
