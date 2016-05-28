@@ -1,3 +1,5 @@
+fs      = require('fs'),
+argv    = require('yargs').argv,
 gulp    = require('gulp'),
 coffee  = require('gulp-coffee'),
 concat  = require('gulp-concat'),
@@ -5,7 +7,11 @@ uglify  = require('gulp-uglify'),
 watch   = require('gulp-watch'),
 batch   = require('gulp-batch'),
 codo    = require('gulp-codo'),
-util    = require('gulp-util');
+util    = require('gulp-util'),
+replace = require('gulp-replace'),
+bump    = require('gulp-bump');
+
+pkg = JSON.parse(fs.readFileSync('package.json'))
 
 bundledSource = [
   'node_modules/jquery/dist/jquery.js',
@@ -53,6 +59,7 @@ gulp.task('build', function() {
   return gulp.src(source)
     .pipe(concat({ path: 'burn.js' }))
     .pipe(coffee().on('error', util.log))
+    .pipe(replace('{VERSION}', pkg.version))
     .pipe(gulp.dest('./'));
 });
 
@@ -90,5 +97,13 @@ gulp.task('default', function() {
         gulp.start('build', done);
         gulp.start('build-bundled', done);
     }));
+});
 
+var bumpType = 'patch'
+if (argv.minor) bumpType = 'minor'
+if (argv.major) bumpType = 'major'
+gulp.task('bump', function() {
+  return gulp.src('package.json')
+    .pipe(bump({ type: bumpType }))
+    .pipe(gulp.dest('./'));
 });

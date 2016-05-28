@@ -22951,6 +22951,8 @@ Backbone.Validation = (function(_){
   Burn = (function() {
     function Burn() {}
 
+    Burn.version = '{VERSION}';
+
     Burn.adapters = {};
 
     Burn.controllers = {};
@@ -23248,6 +23250,45 @@ Backbone.Validation = (function(_){
         });
       };
       return this.route(path, name, callback);
+    };
+
+    Router.prototype.parseUrl = function(url) {
+      var currentParams, path, query;
+      path = url.match(/#([^?]+)/) || '';
+      currentParams = url.match(/([^&?]=[^&?])/g);
+      if (currentParams.length > 0) {
+        query = {};
+        _.each(currentParams, function(param) {
+          var spl;
+          spl = param.split('=');
+          return query[spl[0]] = spl[1] || null;
+        });
+      }
+      return {
+        path: path[1],
+        query: query
+      };
+    };
+
+    Router.prototype.updateQuery = function(params, opts) {
+      var parsedUrl, query;
+      if (params == null) {
+        params = {};
+      }
+      if (opts == null) {
+        opts = {
+          clear: false,
+          trigger: false
+        };
+      }
+      parsedUrl = this.parseUrl(Backbone.history.location.hash);
+      if (parsedUrl.query) {
+        params = _.extend({}, parsedUrl.query, params);
+        query = $.param(params);
+        return this.navigate("#" + parsedUrl.path + "?" + query, {
+          trigger: opts.trigger
+        });
+      }
     };
 
     return Router;

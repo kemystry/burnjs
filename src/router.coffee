@@ -32,3 +32,23 @@ class Burn.Router extends Backbone.Router
         ctrl.onFilterFail(message, params, path, name)
       )
     @route(path, name, callback)
+
+  parseUrl: (url) ->
+    path = url.match(/#([^?]+)/) or ''
+    currentParams = url.match(/([^&?]=[^&?])/g)
+    if currentParams.length > 0
+      query = {}
+      _.each currentParams, (param) ->
+        spl = param.split('=')
+        query[spl[0]] = spl[1] or null
+    {
+      path: path[1]
+      query: query
+    }
+
+  updateQuery: (params = {}, opts = { clear: false, trigger: false }) ->
+    parsedUrl = @parseUrl(Backbone.history.location.hash)
+    if parsedUrl.query
+      params = _.extend({}, parsedUrl.query, params)
+      query = $.param(params)
+      @navigate("##{parsedUrl.path}?#{query}", { trigger: opts.trigger })

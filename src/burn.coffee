@@ -1,4 +1,5 @@
 class Burn
+  @version: '{VERSION}'
 
   @adapters: {}
   @controllers: {}
