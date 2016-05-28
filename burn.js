@@ -312,8 +312,8 @@
       var currentParams, path, query;
       path = url.match(/#([^?]+)/) || '';
       currentParams = url.match(/([^&?]=[^&?])/g);
-      if (currentParams.length > 0) {
-        query = {};
+      query = {};
+      if (currentParams && currentParams.length > 0) {
         _.each(currentParams, function(param) {
           var spl;
           spl = param.split('=');
@@ -338,13 +338,11 @@
         };
       }
       parsedUrl = this.parseUrl(Backbone.history.location.hash);
-      if (parsedUrl.query) {
-        params = _.extend({}, parsedUrl.query, params);
-        query = $.param(params);
-        return this.navigate("#" + parsedUrl.path + "?" + query, {
-          trigger: opts.trigger
-        });
-      }
+      params = _.extend({}, parsedUrl.query, params);
+      query = $.param(params);
+      return this.navigate("#" + parsedUrl.path + "?" + query, {
+        trigger: opts.trigger
+      });
     };
 
     return Router;

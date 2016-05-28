@@ -36,8 +36,8 @@ class Burn.Router extends Backbone.Router
   parseUrl: (url) ->
     path = url.match(/#([^?]+)/) or ''
     currentParams = url.match(/([^&?]=[^&?])/g)
-    if currentParams.length > 0
-      query = {}
+    query = {}
+    if currentParams and currentParams.length > 0
       _.each currentParams, (param) ->
         spl = param.split('=')
         query[spl[0]] = spl[1] or null
@@ -48,7 +48,6 @@ class Burn.Router extends Backbone.Router
 
   updateQuery: (params = {}, opts = { clear: false, trigger: false }) ->
     parsedUrl = @parseUrl(Backbone.history.location.hash)
-    if parsedUrl.query
-      params = _.extend({}, parsedUrl.query, params)
-      query = $.param(params)
-      @navigate("##{parsedUrl.path}?#{query}", { trigger: opts.trigger })
+    params = _.extend({}, parsedUrl.query, params)
+    query = $.param(params)
+    @navigate("##{parsedUrl.path}?#{query}", { trigger: opts.trigger })
