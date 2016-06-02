@@ -327,7 +327,7 @@
     };
 
     Router.prototype.updateQuery = function(params, opts) {
-      var parsedUrl, query;
+      var parsedQuery, parsedUrl, query;
       if (params == null) {
         params = {};
       }
@@ -338,10 +338,11 @@
         };
       }
       parsedUrl = this.parseUrl(Backbone.history.location.hash);
-      params = _.extendOwn({}, parsedUrl.query, params);
+      parsedQuery = opts.clear ? {} : parsedUrl.query;
+      params = _.extendOwn({}, parsedQuery, params);
       query = $.param(params);
       return this.navigate("#" + parsedUrl.path + "?" + query, {
-        trigger: opts.trigger
+        trigger: opts.trigger || false
       });
     };
 

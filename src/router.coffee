@@ -48,6 +48,7 @@ class Burn.Router extends Backbone.Router
 
   updateQuery: (params = {}, opts = { clear: false, trigger: false }) ->
     parsedUrl = @parseUrl(Backbone.history.location.hash)
-    params = _.extendOwn({}, parsedUrl.query, params)
+    parsedQuery = if opts.clear then {} else parsedUrl.query
+    params = _.extendOwn({}, parsedQuery, params)
     query = $.param(params)
-    @navigate("##{parsedUrl.path}?#{query}", { trigger: opts.trigger })
+    @navigate("##{parsedUrl.path}?#{query}", { trigger: opts.trigger or false })
