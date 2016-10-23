@@ -22951,7 +22951,7 @@ Backbone.Validation = (function(_){
   Burn = (function() {
     function Burn() {}
 
-    Burn.version = '1.1.0';
+    Burn.version = '1.1.2';
 
     Burn.adapters = {};
 
@@ -23873,6 +23873,10 @@ Backbone.Validation = (function(_){
       return tpl;
     };
 
+    View.prototype.template = function() {
+      return this.template;
+    };
+
     function View(opts) {
       var key, ref, val;
       this.options = opts;
@@ -23890,7 +23894,7 @@ Backbone.Validation = (function(_){
     View.prototype.render = function() {
       this.beforeRender();
       if (this.template) {
-        new Burn.Template(this.template).load().then((function(_this) {
+        new Burn.Template(this.template()).load().then((function(_this) {
           return function(tpl) {
             _this.beforeTemplateLoad();
             tpl = _this.transformTemplate(tpl);
