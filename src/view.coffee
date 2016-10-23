@@ -25,7 +25,7 @@ class Burn.View extends Backbone.View
   transformTemplate: (tpl) ->
     tpl
 
-  template: -> @template
+  templatePath: -> @template
 
   # @nodoc
   constructor: (opts) ->
@@ -41,7 +41,7 @@ class Burn.View extends Backbone.View
   render: ->
     @beforeRender()
     if @template
-      new Burn.Template(@template()).load().then (tpl) =>
+      new Burn.Template(@templatePath()).load().then (tpl) =>
         @beforeTemplateLoad()
         tpl = @transformTemplate(tpl)
         @$el.html(tpl)

@@ -23873,7 +23873,7 @@ Backbone.Validation = (function(_){
       return tpl;
     };
 
-    View.prototype.template = function() {
+    View.prototype.templatePath = function() {
       return this.template;
     };
 
@@ -23894,7 +23894,7 @@ Backbone.Validation = (function(_){
     View.prototype.render = function() {
       this.beforeRender();
       if (this.template) {
-        new Burn.Template(this.template()).load().then((function(_this) {
+        new Burn.Template(this.templatePath()).load().then((function(_this) {
           return function(tpl) {
             _this.beforeTemplateLoad();
             tpl = _this.transformTemplate(tpl);
