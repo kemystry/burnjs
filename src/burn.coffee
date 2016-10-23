@@ -84,7 +84,7 @@ class Burn
     @_initOpts(opts)
     @_initConfig()
     @_initAdapters()
-    Backbone.history.start()
+    Backbone.history.start(_.pick(opts, 'hashChange', 'pushState', 'root'))
 
   # @private
   # @nodoc

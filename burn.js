@@ -108,7 +108,7 @@
       this._initOpts(opts);
       this._initConfig();
       this._initAdapters();
-      return Backbone.history.start();
+      return Backbone.history.start(_.pick(opts, 'hashChange', 'pushState', 'root'));
     };
 
     Burn._initOpts = function(opts) {
