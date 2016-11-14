@@ -47,7 +47,7 @@ class Burn.Controller
       @_events = []
     else
       for evt, idx in @_events
-        if evt[0] == obj
+        if evt?[0] == obj
           evt[0].off(evt[1], evt[2])
           @_events.splice(idx, 1)
 

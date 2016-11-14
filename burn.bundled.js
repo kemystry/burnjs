@@ -22951,7 +22951,7 @@ Backbone.Validation = (function(_){
   Burn = (function() {
     function Burn() {}
 
-    Burn.version = '1.1.2';
+    Burn.version = '1.1.3';
 
     Burn.adapters = {};
 
@@ -23378,7 +23378,7 @@ Backbone.Validation = (function(_){
         results = [];
         for (idx = j = 0, len1 = ref1.length; j < len1; idx = ++j) {
           evt = ref1[idx];
-          if (evt[0] === obj) {
+          if ((evt != null ? evt[0] : void 0) === obj) {
             evt[0].off(evt[1], evt[2]);
             results.push(this._events.splice(idx, 1));
           } else {
